@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0px;
+  box-sizing: border-box;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+/* @media (max-width: 500px) {
+  html {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 430px) {
+  html {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 400px) {
+  html {
+    font-size: 12px;
+  }
+} */
