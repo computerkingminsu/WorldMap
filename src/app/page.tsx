@@ -28,7 +28,7 @@ export default function GlobeEdit() {
     return Object.values(countriesData);
   }, []);
 
-  const handleLabelClick = useCallback((label: { lat: number; lng: number; country: string; info: string }) => {
+  const handleLabelClick = useCallback(async (label: { lat: number; lng: number; country: string; info: string }) => {
     if (!globeRef?.current) return;
     globeRef.current.controls().autoRotate = false; // Stop rotation
     globeRef.current.pointOfView(
@@ -43,6 +43,23 @@ export default function GlobeEdit() {
     setTimeout(() => {
       setLabelToShow(label.name);
     }, 1000); // Show the label after the zoom transition
+    // OpenAI API 요청 부분
+    const prompt = '사용자의 위치는 서울입니다. 예산은 100만원입니다. 추천해 주세요.';
+
+    try {
+      const response = await fetch('/api/openai', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ prompt }),
+      });
+
+      const data = await response.json();
+      console.log('리턴값:', data.result);
+    } catch (error) {
+      console.error('OpenAI API 요청 중 오류 발생:', error);
+    }
   }, []);
 
   const handleBackClick = useCallback(() => {
@@ -71,8 +88,6 @@ export default function GlobeEdit() {
     },
     [selectedLabel]
   );
-
-  //////////gpt 넣을부분
 
   return (
     <div className="relative">
