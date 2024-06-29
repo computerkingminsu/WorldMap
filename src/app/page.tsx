@@ -72,6 +72,8 @@ export default function GlobeEdit() {
     [selectedLabel]
   );
 
+  //////////gpt 넣을부분
+
   return (
     <div className="relative">
       <Globe
