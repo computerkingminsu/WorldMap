@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Noto_Sans_KR } from 'next/font/google';
 import './globals.css';
+import LayoutHeader from './layout/layoutHeader';
 
 const notoSansKr = Noto_Sans_KR({
   weight: ['500'],
@@ -22,7 +23,10 @@ export default function RootLayout({
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, minimum-scale=1" />
       </head>
-      <body className={notoSansKr.className}>{children}</body>
+      <body className={notoSansKr.className}>
+        <LayoutHeader />
+        {children}
+      </body>
     </html>
   );
 }

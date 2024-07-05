@@ -2,7 +2,7 @@ export const countriesData = {
   kr: {
     lat: 35.907757,
     lng: 127.766922,
-    name: 'Korea',
+    name: 'South Korea',
   },
   us: {
     lat: 39.891275,

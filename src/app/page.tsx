@@ -14,6 +14,8 @@ export default function GlobeEdit() {
   const [width, height] = useWindowSize();
   const [selectedLabel, setSelectedLabel] = useState(null);
   const [labelToShow, setLabelToShow] = useState(null);
+  const [inputValue, setInputValue] = useState('');
+  const [isRecording, setIsRecording] = useState(false);
 
   useEffect(() => {
     if (!globeRef?.current) return;
@@ -30,24 +32,42 @@ export default function GlobeEdit() {
     return Object.values(countriesData);
   }, []);
 
-  const handleLabelClick = useCallback(async (label: { lat: number; lng: number; country: string; info: string }) => {
+  const handleLabelClick = useCallback((label: { lat: number; lng: number; country: string; info: string }) => {
     if (!globeRef?.current) return;
-    globeRef.current.controls().autoRotate = false; // Stop rotation
+    globeRef.current.controls().autoRotate = false;
+    console.log(label);
     globeRef.current.pointOfView(
       {
         lat: label.lat,
         lng: label.lng,
-        altitude: 1, // Adjust altitude as needed
+        altitude: 1,
       },
       1000
-    ); // Duration for the zoom transition
+    );
     setSelectedLabel(label.name);
     setTimeout(() => {
       setLabelToShow(label.name);
-    }, 1000); // Show the label after the zoom transition
-    // OpenAI API 요청 부분
-    const prompt = '사용자의 위치는 서울입니다. 예산은 100만원입니다. 추천해 주세요.';
+    }, 1000);
+  }, []);
 
+  const handleBackClick = useCallback(() => {
+    if (!globeRef?.current) return;
+    globeRef.current.controls().autoRotate = true;
+    globeRef.current.pointOfView(
+      {
+        lat: 35.907757,
+        lng: 127.766922,
+        altitude: 2,
+      },
+      1000
+    );
+    setLabelToShow(null);
+    setSelectedLabel(null);
+  }, []);
+
+  const handleSendClick = async () => {
+    const prompt = inputValue;
+    setInputValue('');
     try {
       const response = await fetch('/api/openai', {
         method: 'POST',
@@ -59,33 +79,92 @@ export default function GlobeEdit() {
 
       const data = await response.json();
       console.log('리턴값:', data.result);
+
+      // 결과값을 기반으로 줌인
+      const targetCountry = Object.values(countriesData).find((country) => country.name === data.result);
+
+      if (targetCountry) {
+        handleLabelClick(targetCountry);
+      }
     } catch (error) {
       console.error('OpenAI API 요청 중 오류 발생:', error);
     }
-  }, []);
+  };
 
-  const handleBackClick = useCallback(() => {
-    if (!globeRef?.current) return;
-    globeRef.current.controls().autoRotate = true; // Resume rotation
-    globeRef.current.pointOfView(
-      {
-        lat: 35.907757,
-        lng: 127.766922,
-        altitude: 2,
-      },
-      1000
-    ); // Transition back to the initial view
-    setLabelToShow(null);
-    setSelectedLabel(null);
-  }, []);
+  const recordSend = async (prompt: string) => {
+    setInputValue('');
+    try {
+      const response = await fetch('/api/openai', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ prompt }),
+      });
+
+      const data = await response.json();
+      console.log('리턴값:', data.result);
+      // 결과값을 기반으로 줌인
+      const targetCountry = Object.values(countriesData).find((country) => country.name === data.result);
+
+      if (targetCountry) {
+        handleLabelClick(targetCountry);
+      }
+    } catch (error) {
+      console.error('OpenAI API 요청 중 오류 발생:', error);
+    }
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      handleSendClick();
+    }
+  };
+
+  const startListening = () => {
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+      alert('음성인식 기능을 지원하지 않는 브라우저 입니다.');
+      return;
+    }
+
+    const SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'ko-KR'; // 언어 설정
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    recognition.onstart = () => {
+      setIsRecording(true);
+      console.log('Listening...');
+    };
+
+    recognition.onresult = async (event: SpeechRecognitionResult) => {
+      const transcript: string = event.results[0][0].transcript;
+      console.log('Transcript:', transcript);
+      setInputValue(transcript); // 녹음된 텍스트를 inputValue에 저장
+      setIsRecording(false);
+      await recordSend(transcript);
+    };
+
+    recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+      alert('마이크 권한이 필요합니다.');
+      setIsRecording(false);
+    };
+
+    recognition.onend = () => {
+      setIsRecording(false);
+    };
+
+    recognition.start();
+  };
 
   const handleLabelHover = useCallback(
     (label: { lat: number; lng: number } | null) => {
       if (!globeRef?.current) return;
       if (label) {
-        globeRef.current.controls().autoRotate = false; // Stop rotation on hover
+        globeRef.current.controls().autoRotate = false;
       } else if (!selectedLabel) {
-        globeRef.current.controls().autoRotate = true; // Resume rotation if no label is selected
+        globeRef.current.controls().autoRotate = true;
       }
     },
     [selectedLabel]
@@ -130,10 +209,13 @@ export default function GlobeEdit() {
               type="text"
               className="flex-grow bg-transparent border-none outline-none text-white placeholder-gray-400 px-4"
               placeholder="당신의 예산, 일정, 취향 등을 입력해주세요."
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              onKeyDown={handleKeyDown}
             />
             <div className="flex items-center space-x-2 mr-4">
-              <IoMicOutline size={30} className="cursor-pointer text-gray-400" />
-              <LuSend size={25} className="cursor-pointer text-gray-400" />
+              <IoMicOutline size={30} className="cursor-pointer text-gray-400" onClick={startListening} />
+              <LuSend size={25} className="cursor-pointer text-gray-400" onClick={handleSendClick} />
             </div>
           </div>
         </div>
