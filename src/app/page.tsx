@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { useWindowSize } from '@react-hook/window-size/throttled';
 import { IoMicOutline } from 'react-icons/io5';
 import { LuSend } from 'react-icons/lu';
+import Flag from 'react-world-flags';
 
 export default function GlobeEdit() {
   const router = useRouter();
@@ -173,6 +174,7 @@ export default function GlobeEdit() {
   return (
     <>
       <div>
+        {/* Globe */}
         <Globe
           ref={globeRef}
           width={width > 480 ? width : 480}
@@ -194,15 +196,31 @@ export default function GlobeEdit() {
           onLabelClick={handleLabelClick}
           onLabelHover={handleLabelHover}
         />
+
+        {/* 라벨 클릭 시 보여 줌 */}
         {labelToShow && (
-          <div className="absolute top-[35%] left-1/2 transform -translate-x-1/2 bg-white p-5 rounded-lg z-10">
-            <h3>{selectedLabel}</h3>
-            <button className="mt-2 bg-blue-500 text-white px-3 py-1 rounded" onClick={handleBackClick}>
-              Back
-            </button>
+          <div className="absolute top-[23%] left-1/2 transform -translate-x-1/2 bg-white rounded-lg z-10 flex flex-col items-center p-5">
+            {
+              <Flag
+                code={Object.values(countriesData).find((country) => country.name === selectedLabel).code}
+                className="mb-4 mt-1"
+                style={{ width: '100px', height: '60px', objectFit: 'cover' }}
+              />
+            }
+            <h3 className="text-lg font-semibold">{selectedLabel}</h3>
+            <p className="text-center px-4">
+              {Object.values(countriesData).find((country) => country.name === selectedLabel).info}
+            </p>
+            <div className="mt-4 w-full flex justify-between items-center ">
+              <button className="bg-blue-500 text-white px-3 py-1 rounded mr-2" onClick={handleBackClick}>
+                Back
+              </button>
+              <span className="text-blue-500 cursor-pointer">More Details &gt;</span>
+            </div>
           </div>
         )}
 
+        {/* input */}
         <div className="absolute bottom-5 left-1/2 transform -translate-x-1/2 w-full max-w-lg ">
           <div className="flex items-center bg-gray-700 text-white rounded-full p-2">
             <input
