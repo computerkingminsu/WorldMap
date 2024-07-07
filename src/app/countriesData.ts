@@ -4,7 +4,7 @@ export const countriesData = {
     lng: 127.766922,
     name: 'South Korea',
     code: 'kr',
-    info: '좋은 나라',
+    info: '수도는 서울특별시로 인구는 5163만명이다.',
   },
   us: {
     lat: 39.891275,
@@ -29,7 +29,7 @@ export const countriesData = {
   uk: {
     lat: 55.378051,
     lng: -3.435973,
-    name: 'U.K',
+    name: 'United Kingdom',
     code: 'gb',
     info: '좋은 나라',
   },

@@ -17,6 +17,7 @@ export default function GlobeEdit() {
   const [labelToShow, setLabelToShow] = useState(null);
   const [inputValue, setInputValue] = useState('');
   const [isRecording, setIsRecording] = useState(false);
+  const [description, setDescription] = useState('');
 
   useEffect(() => {
     if (!globeRef?.current) return;
@@ -46,6 +47,7 @@ export default function GlobeEdit() {
       1000
     );
     setSelectedLabel(label.name);
+    setDescription(''); // 설명 초기화
     setTimeout(() => {
       setLabelToShow(label.name);
     }, 1000);
@@ -64,6 +66,7 @@ export default function GlobeEdit() {
     );
     setLabelToShow(null);
     setSelectedLabel(null);
+    setDescription(''); // 설명 초기화
   }, []);
 
   const handleSendClick = async () => {
@@ -81,17 +84,20 @@ export default function GlobeEdit() {
       const data = await response.json();
       console.log('리턴값:', data.result);
 
+      // 결과값에서 나라이름과 설명 추출
+      const [countryName, countryDescription] = data.result.split(':').map((str) => str.trim());
+
       // 결과값을 기반으로 줌인
-      const targetCountry = Object.values(countriesData).find((country) => country.name === data.result);
+      const targetCountry = Object.values(countriesData).find((country) => country.name === countryName);
 
       if (targetCountry) {
         handleLabelClick(targetCountry);
+        setDescription(countryDescription); // 설명 저장
       }
     } catch (error) {
       console.error('OpenAI API 요청 중 오류 발생:', error);
     }
   };
-
   const recordSend = async (prompt: string) => {
     setInputValue('');
     try {
@@ -105,8 +111,12 @@ export default function GlobeEdit() {
 
       const data = await response.json();
       console.log('리턴값:', data.result);
+
+      // 결과값에서 나라이름 추출
+      const countryName = data.result.split(':')[0].trim();
+
       // 결과값을 기반으로 줌인
-      const targetCountry = Object.values(countriesData).find((country) => country.name === data.result);
+      const targetCountry = Object.values(countriesData).find((country) => country.name === countryName);
 
       if (targetCountry) {
         handleLabelClick(targetCountry);
@@ -208,9 +218,13 @@ export default function GlobeEdit() {
               />
             }
             <h3 className="text-lg font-semibold">{selectedLabel}</h3>
-            <p className="text-center px-4">
-              {Object.values(countriesData).find((country) => country.name === selectedLabel).info}
-            </p>
+            {description ? (
+              <p className="text-center px-4">{description}</p>
+            ) : (
+              <p className="text-center px-4">
+                {Object.values(countriesData).find((country) => country.name === selectedLabel).info}
+              </p>
+            )}
             <div className="mt-4 w-full flex justify-between items-center ">
               <button className="bg-blue-500 text-white px-3 py-1 rounded mr-2" onClick={handleBackClick}>
                 Back
@@ -219,7 +233,6 @@ export default function GlobeEdit() {
             </div>
           </div>
         )}
-
         {/* input */}
         <div className="absolute bottom-5 left-1/2 transform -translate-x-1/2 w-full max-w-lg ">
           <div className="flex items-center bg-gray-700 text-white rounded-full p-2">
