@@ -9,12 +9,20 @@ import { IoMicOutline } from 'react-icons/io5';
 import { LuSend } from 'react-icons/lu';
 import Flag from 'react-world-flags';
 
+interface CountryLabel {
+  lat: number;
+  lng: number;
+  country: string;
+  info: string;
+  name: string; // name 속성 추가
+}
+
 export default function Main() {
   const router = useRouter();
   const globeRef = useRef<GlobeMethods>();
   const [width, height] = useWindowSize();
-  const [selectedLabel, setSelectedLabel] = useState(null);
-  const [labelToShow, setLabelToShow] = useState(null);
+  const [selectedLabel, setSelectedLabel] = useState<string | null>(null);
+  const [labelToShow, setLabelToShow] = useState<string | null>(null);
   const [inputValue, setInputValue] = useState('');
   const [isRecording, setIsRecording] = useState(false);
   const [description, setDescription] = useState('');
@@ -34,7 +42,7 @@ export default function Main() {
     return Object.values(countriesData);
   }, []);
 
-  const handleLabelClick = useCallback((label: { lat: number; lng: number; country: string; info: string }) => {
+  const handleLabelClick = useCallback((label: CountryLabel) => {
     if (!globeRef?.current) return;
     globeRef.current.controls().autoRotate = false;
     console.log(label);
@@ -91,7 +99,7 @@ export default function Main() {
       const targetCountry = Object.values(countriesData).find((country) => country.name === countryName);
 
       if (targetCountry) {
-        handleLabelClick(targetCountry);
+        handleLabelClick(targetCountry as CountryLabel);
         setDescription(countryDescription); // 설명 저장
       }
     } catch (error) {
@@ -120,13 +128,14 @@ export default function Main() {
       const targetCountry = Object.values(countriesData).find((country) => country.name === countryName);
 
       if (targetCountry) {
-        handleLabelClick(targetCountry);
+        handleLabelClick(targetCountry as CountryLabel);
         setDescription(countryDescription); // 설명 저장
       }
     } catch (error) {
       console.error('OpenAI API 요청 중 오류 발생:', error);
     }
   };
+
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
       handleSendClick();
@@ -171,7 +180,7 @@ export default function Main() {
   };
 
   const handleLabelHover = useCallback(
-    (label: { lat: number; lng: number } | null) => {
+    (label: CountryLabel | null) => {
       if (!globeRef?.current) return;
       if (label) {
         globeRef.current.controls().autoRotate = false;
@@ -213,7 +222,7 @@ export default function Main() {
           <div className="absolute top-[23%] left-1/2 transform -translate-x-1/2 bg-white rounded-lg z-10 flex flex-col items-center p-5">
             {
               <Flag
-                code={Object.values(countriesData).find((country) => country.name === selectedLabel).code}
+                code={Object.values(countriesData).find((country) => country.name === selectedLabel)?.code}
                 className="mb-4 mt-1"
                 style={{ width: '100px', height: '60px', objectFit: 'cover' }}
               />
@@ -223,7 +232,7 @@ export default function Main() {
               <p className="text-center px-4">{description}</p>
             ) : (
               <p className="text-center px-4">
-                {Object.values(countriesData).find((country) => country.name === selectedLabel).info}
+                {Object.values(countriesData).find((country) => country.name === selectedLabel)?.info}
               </p>
             )}
             <div className="mt-4 w-full flex justify-between items-center ">
