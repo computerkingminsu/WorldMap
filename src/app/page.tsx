@@ -12,9 +12,9 @@ import Flag from 'react-world-flags';
 interface CountryLabel {
   lat: number;
   lng: number;
-  country: string;
-  info: string;
-  name: string; // name 속성 추가
+  country?: string;
+  info?: string;
+  name: string;
 }
 
 export default function Main() {
@@ -167,7 +167,7 @@ export default function Main() {
       await recordSend(transcript);
     };
 
-    recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+    recognition.onerror = (event: SpeechRecognitionResult) => {
       alert('마이크 권한이 필요합니다.');
       setIsRecording(false);
     };
