@@ -5,6 +5,10 @@ const openai = new OpenAI({
   apiKey: process.env.NEXT_PUBLIC_OPENAI_API,
 });
 
+function isError(error: unknown): error is Error {
+  return error instanceof Error;
+}
+
 export async function POST(request: Request) {
   const { prompt } = await request.json();
 
@@ -29,6 +33,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Invalid response from OpenAI API' }, { status: 500 });
     }
   } catch (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    if (isError(error)) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    } else {
+      return NextResponse.json({ error: 'An unknown error occurred' }, { status: 500 });
+    }
   }
 }
