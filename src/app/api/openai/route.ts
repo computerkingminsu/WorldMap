@@ -27,16 +27,29 @@ export async function POST(request: Request) {
       max_tokens: 150,
     });
 
-    if (response.choices && response.choices[0] && response.choices[0].message && response.choices[0].message.content) {
-      return NextResponse.json({ result: response.choices[0].message.content.trim() });
+    if (
+      response.choices &&
+      response.choices[0] &&
+      response.choices[0].message &&
+      response.choices[0].message.content
+    ) {
+      return NextResponse.json({
+        result: response.choices[0].message.content.trim(),
+      });
     } else {
-      return NextResponse.json({ error: 'Invalid response from OpenAI API' }, { status: 500 });
+      return NextResponse.json(
+        { error: 'Invalid response from OpenAI API' },
+        { status: 500 },
+      );
     }
   } catch (error) {
     if (isError(error)) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     } else {
-      return NextResponse.json({ error: 'An unknown error occurred' }, { status: 500 });
+      return NextResponse.json(
+        { error: 'An unknown error occurred' },
+        { status: 500 },
+      );
     }
   }
 }

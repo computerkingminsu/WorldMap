@@ -1,5 +1,11 @@
 'use client';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import Globe, { GlobeMethods } from 'react-globe.gl';
 import { countriesHex } from '../app/countriesHex';
 import { countriesData } from '../app/countriesData';
@@ -42,22 +48,23 @@ export default function Main() {
     return Object.values(countriesData);
   }, []);
 
-  const handleLabelClick = useCallback((label: CountryLabel) => {
+  const handleLabelClick = useCallback((label: object) => {
+    const countryLabel = label as CountryLabel;
     if (!globeRef?.current) return;
     globeRef.current.controls().autoRotate = false;
-    console.log(label);
+    console.log(countryLabel);
     globeRef.current.pointOfView(
       {
-        lat: label.lat,
-        lng: label.lng,
+        lat: countryLabel.lat,
+        lng: countryLabel.lng,
         altitude: 1,
       },
-      1000
+      1000,
     );
-    setSelectedLabel(label.name);
-    setDescription(''); // 설명 초기화
+    setSelectedLabel(countryLabel.name);
+    setDescription('');
     setTimeout(() => {
-      setLabelToShow(label.name);
+      setLabelToShow(countryLabel.name);
     }, 1000);
   }, []);
 
@@ -70,7 +77,7 @@ export default function Main() {
         lng: 127.766922,
         altitude: 2,
       },
-      1000
+      1000,
     );
     setLabelToShow(null);
     setSelectedLabel(null);
@@ -93,10 +100,14 @@ export default function Main() {
       console.log('리턴값:', data.result);
 
       // 결과값에서 나라이름과 설명 추출
-      const [countryName, countryDescription] = data.result.split(':').map((str: string) => str.trim());
+      const [countryName, countryDescription] = data.result
+        .split(':')
+        .map((str: string) => str.trim());
 
       // 결과값을 기반으로 줌인
-      const targetCountry = Object.values(countriesData).find((country) => country.name === countryName);
+      const targetCountry = Object.values(countriesData).find(
+        (country) => country.name === countryName,
+      );
 
       if (targetCountry) {
         handleLabelClick(targetCountry as CountryLabel);
@@ -122,10 +133,14 @@ export default function Main() {
       console.log('리턴값:', data.result);
 
       // 결과값에서 나라이름과 설명 추출
-      const [countryName, countryDescription] = data.result.split(':').map((str: string) => str.trim());
+      const [countryName, countryDescription] = data.result
+        .split(':')
+        .map((str: string) => str.trim());
 
       // 결과값을 기반으로 줌인
-      const targetCountry = Object.values(countriesData).find((country) => country.name === countryName);
+      const targetCountry = Object.values(countriesData).find(
+        (country) => country.name === countryName,
+      );
 
       if (targetCountry) {
         handleLabelClick(targetCountry as CountryLabel);
@@ -143,12 +158,16 @@ export default function Main() {
   };
 
   const startListening = () => {
-    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+    if (
+      !('webkitSpeechRecognition' in window) &&
+      !('SpeechRecognition' in window)
+    ) {
       alert('음성인식 기능을 지원하지 않는 브라우저 입니다.');
       return;
     }
 
-    const SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
+    const SpeechRecognition =
+      window.webkitSpeechRecognition || window.SpeechRecognition;
     const recognition = new SpeechRecognition();
     recognition.lang = 'ko-KR'; // 언어 설정
     recognition.interimResults = false;
@@ -180,15 +199,16 @@ export default function Main() {
   };
 
   const handleLabelHover = useCallback(
-    (label: CountryLabel | null) => {
+    (label: object | null) => {
+      const countryLabel = label as CountryLabel;
       if (!globeRef?.current) return;
-      if (label) {
+      if (countryLabel) {
         globeRef.current.controls().autoRotate = false;
       } else if (!selectedLabel) {
         globeRef.current.controls().autoRotate = true;
       }
     },
-    [selectedLabel]
+    [selectedLabel],
   );
 
   return (
@@ -222,7 +242,11 @@ export default function Main() {
           <div className="absolute top-[23%] left-1/2 transform -translate-x-1/2 bg-white rounded-lg z-10 flex flex-col items-center p-5">
             {
               <Flag
-                code={Object.values(countriesData).find((country) => country.name === selectedLabel)?.code}
+                code={
+                  Object.values(countriesData).find(
+                    (country) => country.name === selectedLabel,
+                  )?.code
+                }
                 className="mb-4 mt-1"
                 style={{ width: '100px', height: '60px', objectFit: 'cover' }}
               />
@@ -232,14 +256,23 @@ export default function Main() {
               <p className="text-center px-4">{description}</p>
             ) : (
               <p className="text-center px-4">
-                {Object.values(countriesData).find((country) => country.name === selectedLabel)?.info}
+                {
+                  Object.values(countriesData).find(
+                    (country) => country.name === selectedLabel,
+                  )?.info
+                }
               </p>
             )}
             <div className="mt-4 w-full flex justify-between items-center ">
-              <button className="bg-blue-500 text-white px-3 py-1 rounded mr-2" onClick={handleBackClick}>
+              <button
+                className="bg-blue-500 text-white px-3 py-1 rounded mr-2"
+                onClick={handleBackClick}
+              >
                 Back
               </button>
-              <span className="text-blue-500 cursor-pointer">More Details &gt;</span>
+              <span className="text-blue-500 cursor-pointer">
+                More Details &gt;
+              </span>
             </div>
           </div>
         )}
@@ -255,8 +288,16 @@ export default function Main() {
               onKeyDown={handleKeyDown}
             />
             <div className="flex items-center space-x-2 mr-4">
-              <IoMicOutline size={30} className="cursor-pointer text-gray-400" onClick={startListening} />
-              <LuSend size={25} className="cursor-pointer text-gray-400" onClick={handleSendClick} />
+              <IoMicOutline
+                size={30}
+                className="cursor-pointer text-gray-400"
+                onClick={startListening}
+              />
+              <LuSend
+                size={25}
+                className="cursor-pointer text-gray-400"
+                onClick={handleSendClick}
+              />
             </div>
           </div>
         </div>
