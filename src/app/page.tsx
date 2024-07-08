@@ -159,7 +159,7 @@ export default function Main() {
       console.log('Listening...');
     };
 
-    recognition.onresult = async (event: SpeechRecognitionResult) => {
+    recognition.onresult = async (event: any) => {
       const transcript: string = event.results[0][0].transcript;
       console.log('Transcript:', transcript);
       setInputValue(transcript); // 녹음된 텍스트를 inputValue에 저장
@@ -167,7 +167,7 @@ export default function Main() {
       await recordSend(transcript);
     };
 
-    recognition.onerror = (event: SpeechRecognitionResult) => {
+    recognition.onerror = () => {
       alert('마이크 권한이 필요합니다.');
       setIsRecording(false);
     };
@@ -200,7 +200,7 @@ export default function Main() {
           width={width > 480 ? width : 480}
           height={height}
           labelsData={countriesDataValues}
-          labelText={(d) => d.name}
+          labelText={(d: any) => d.name}
           labelSize={1.5} // Increase label size
           labelDotRadius={useCallback(() => 1.8, [])}
           labelAltitude={useCallback(() => 0.01, [])}
