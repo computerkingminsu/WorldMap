@@ -93,7 +93,7 @@ export default function Main() {
       console.log('리턴값:', data.result);
 
       // 결과값에서 나라이름과 설명 추출
-      const [countryName, countryDescription] = data.result.split(':').map((str) => str.trim());
+      const [countryName, countryDescription] = data.result.split(':').map((str: string) => str.trim());
 
       // 결과값을 기반으로 줌인
       const targetCountry = Object.values(countriesData).find((country) => country.name === countryName);
@@ -122,7 +122,7 @@ export default function Main() {
       console.log('리턴값:', data.result);
 
       // 결과값에서 나라이름과 설명 추출
-      const [countryName, countryDescription] = data.result.split(':').map((str) => str.trim());
+      const [countryName, countryDescription] = data.result.split(':').map((str: string) => str.trim());
 
       // 결과값을 기반으로 줌인
       const targetCountry = Object.values(countriesData).find((country) => country.name === countryName);
