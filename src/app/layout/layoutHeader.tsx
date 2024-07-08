@@ -1,4 +1,5 @@
 import { Manrope } from 'next/font/google';
+import Link from 'next/link';
 
 const roboto = Manrope({
   weight: '400',
@@ -11,9 +12,15 @@ export default function LayoutHeader() {
       <div className="flex justify-between items-center h-full px-8">
         <div className={`text-2xl font-bold cursor-pointer ${roboto.className}`}>GoTrip</div>
         <div className="flex space-x-5">
-          <div className=" cursor-pointer">Home</div>
-          <div className=" cursor-pointer">Countries</div>
-          <div className=" cursor-pointer">Contact</div>
+          <Link href="/">
+            <div className=" cursor-pointer">Home</div>
+          </Link>
+          <Link href="/japan">
+            <div className="cursor-pointer">Countries</div>
+          </Link>
+          <Link href="/contact">
+            <div className=" cursor-pointer">Contact</div>
+          </Link>
         </div>
       </div>
     </div>

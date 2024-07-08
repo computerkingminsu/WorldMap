@@ -9,7 +9,7 @@ import { IoMicOutline } from 'react-icons/io5';
 import { LuSend } from 'react-icons/lu';
 import Flag from 'react-world-flags';
 
-export default function GlobeEdit() {
+export default function Main() {
   const router = useRouter();
   const globeRef = useRef<GlobeMethods>();
   const [width, height] = useWindowSize();
@@ -98,6 +98,7 @@ export default function GlobeEdit() {
       console.error('OpenAI API 요청 중 오류 발생:', error);
     }
   };
+
   const recordSend = async (prompt: string) => {
     setInputValue('');
     try {
@@ -112,20 +113,20 @@ export default function GlobeEdit() {
       const data = await response.json();
       console.log('리턴값:', data.result);
 
-      // 결과값에서 나라이름 추출
-      const countryName = data.result.split(':')[0].trim();
+      // 결과값에서 나라이름과 설명 추출
+      const [countryName, countryDescription] = data.result.split(':').map((str) => str.trim());
 
       // 결과값을 기반으로 줌인
       const targetCountry = Object.values(countriesData).find((country) => country.name === countryName);
 
       if (targetCountry) {
         handleLabelClick(targetCountry);
+        setDescription(countryDescription); // 설명 저장
       }
     } catch (error) {
       console.error('OpenAI API 요청 중 오류 발생:', error);
     }
   };
-
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
       handleSendClick();
