@@ -18,9 +18,10 @@ import Flag from 'react-world-flags';
 interface CountryLabel {
   lat: number;
   lng: number;
-  country?: string;
-  info?: string;
+  country: string;
+  info: string;
   name: string;
+  code: string;
 }
 
 export default function Main() {

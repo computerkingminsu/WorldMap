@@ -11,6 +11,7 @@ export const countriesData = {
     lng: -101.375893,
     name: 'USA',
     code: 'us',
+    info: '수도는 서울특별시로 인구는 5163만명이다.',
   },
   jp: {
     lat: 36.204824,
