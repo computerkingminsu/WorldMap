@@ -159,6 +159,8 @@ export default function Main() {
   };
 
   const startListening = () => {
+    if (typeof window === 'undefined') return;
+
     if (
       !('webkitSpeechRecognition' in window) &&
       !('SpeechRecognition' in window)
@@ -168,7 +170,7 @@ export default function Main() {
     }
 
     const SpeechRecognition =
-      window.webkitSpeechRecognition || window.SpeechRecognition;
+      (window as any).webkitSpeechRecognition || window.SpeechRecognition;
     const recognition = new SpeechRecognition();
     recognition.lang = 'ko-KR'; // 언어 설정
     recognition.interimResults = false;
@@ -198,7 +200,6 @@ export default function Main() {
 
     recognition.start();
   };
-
   const handleLabelHover = useCallback(
     (label: object | null) => {
       const countryLabel = label as CountryLabel;
