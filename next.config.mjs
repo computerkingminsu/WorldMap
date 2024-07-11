@@ -1,4 +1,9 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {};
+
+const nextConfig = {
+  images: {
+    domains: ['openweathermap.org', 'www.airvisual.com'],
+  },
+};
 
 export default nextConfig;

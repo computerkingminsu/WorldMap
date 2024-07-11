@@ -1,11 +1,5 @@
 'use client';
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Globe, { GlobeMethods } from 'react-globe.gl';
 import { countriesHex } from '../../app/countriesHex';
 import { countriesData } from '../../app/countriesData';
@@ -45,11 +39,9 @@ export default function Main() {
     });
   }, []);
 
-  const countriesDataValues = useMemo(() => {
-    return Object.values(countriesData);
-  }, []);
+  const countriesDataValues = Object.values(countriesData);
 
-  const handleLabelClick = useCallback((label: object) => {
+  const handleLabelClick = (label: object) => {
     const countryLabel = label as CountryLabel; // 타입 캐스팅
     if (!globeRef?.current) return;
     globeRef.current.controls().autoRotate = false;
@@ -67,9 +59,9 @@ export default function Main() {
     setTimeout(() => {
       setLabelToShow(countryLabel.name);
     }, 1000);
-  }, []);
+  };
 
-  const handleBackClick = useCallback(() => {
+  const handleBackClick = () => {
     if (!globeRef?.current) return;
     globeRef.current.controls().autoRotate = true;
     globeRef.current.pointOfView(
@@ -83,7 +75,7 @@ export default function Main() {
     setLabelToShow(null);
     setSelectedLabel(null);
     setDescription(''); // 설명 초기화
-  }, []);
+  };
 
   const handleSendClick = async () => {
     const prompt = inputValue;
@@ -190,7 +182,6 @@ export default function Main() {
     };
 
     recognition.onerror = () => {
-      alert('마이크 권한이 필요합니다.');
       setIsRecording(false);
     };
 
@@ -201,22 +192,19 @@ export default function Main() {
     recognition.start();
   };
 
-  const handleLabelHover = useCallback(
-    (label: object | null) => {
-      const countryLabel = label as CountryLabel; // 타입 캐스팅
-      if (!globeRef?.current) return;
-      if (countryLabel) {
-        globeRef.current.controls().autoRotate = false;
-      } else if (!selectedLabel) {
-        globeRef.current.controls().autoRotate = true;
-      }
-    },
-    [selectedLabel],
-  );
+  const handleLabelHover = (label: object | null) => {
+    const countryLabel = label as CountryLabel; // 타입 캐스팅
+    if (!globeRef?.current) return;
+    if (countryLabel) {
+      globeRef.current.controls().autoRotate = false;
+    } else if (!selectedLabel) {
+      globeRef.current.controls().autoRotate = true;
+    }
+  };
 
   return (
     <>
-      <div>
+      <div className="w-screen h-screen bg-[#151825]">
         {/* Globe */}
         <Globe
           ref={globeRef}
@@ -225,15 +213,15 @@ export default function Main() {
           labelsData={countriesDataValues}
           labelText={(d: any) => d.name}
           labelSize={1.5} // Increase label size
-          labelDotRadius={useCallback(() => 1.8, [])}
-          labelAltitude={useCallback(() => 0.01, [])}
-          labelColor={useCallback(() => '#ffd000', [])}
+          labelDotRadius={() => 1.8}
+          labelAltitude={() => 0.01}
+          labelColor={() => '#ffd000'}
           labelsTransitionDuration={500}
           hexPolygonsData={countriesHex.features}
-          hexPolygonResolution={useCallback(() => 3, [])}
-          hexPolygonMargin={useCallback(() => 0.4, [])}
-          hexPolygonColor={useCallback(() => '#2e7a7c', [])}
-          backgroundColor={'#222534'}
+          hexPolygonResolution={() => 3}
+          hexPolygonMargin={() => 0.4}
+          hexPolygonColor={() => '#2e7a7c'}
+          backgroundColor={'#151825'}
           showGlobe={false}
           showAtmosphere={false}
           onLabelClick={handleLabelClick}
@@ -259,9 +247,11 @@ export default function Main() {
               <p className="text-center px-4">{description}</p>
             ) : (
               <p className="text-center px-4">
-                {Object.values(countriesData).find(
-                  (country) => country.name === selectedLabel,
-                )?.info ?? '정보가 없습니다'}
+                {
+                  Object.values(countriesData).find(
+                    (country) => country.name === selectedLabel,
+                  )?.info
+                }
               </p>
             )}
             <div className="mt-4 w-full flex justify-between items-center ">
