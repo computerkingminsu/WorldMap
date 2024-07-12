@@ -3,7 +3,6 @@
 import { Manrope } from 'next/font/google';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import axios from 'axios';
 import { useEffect, useState } from 'react';
 
 const roboto = Manrope({
@@ -13,27 +12,26 @@ const roboto = Manrope({
 
 export default function LayoutHeader() {
   const pathname = usePathname();
-  const [weather, setWeather] = useState(null);
+  const [scroll, setScroll] = useState(false);
 
   useEffect(() => {
-    fetchWeather();
+    const handleScroll = () => {
+      setScroll(window.scrollY > 0);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
   }, []);
 
-  const fetchWeather = async () => {
-    try {
-      const response = await axios.get(
-        `https://api.openweathermap.org/data/2.5/weather?q=Madrid&units=metric&appid=${process.env.NEXT_PUBLIC_OPENWEATHER_API}`,
-      );
-      setWeather(response.data);
-      console.log('Weather data:', response.data);
-    } catch (error) {
-      console.error('Error fetching weather data:', error);
-    }
-  };
-
   return (
-    <div className="fixed top-0 left-0 w-screen h-14 z-20 text-white">
-      <div className="flex justify-between items-center h-full px-10 pt-4">
+    <div
+      className={`fixed top-0 left-0 w-screen h-16 z-20 bg-[#151825] text-white transition-shadow duration-300 ${
+        scroll ? 'shadow-custom' : ''
+      }`}
+    >
+      <div className="flex justify-between items-center h-full px-10">
         <div
           className={`text-2xl font-bold cursor-pointer ${roboto.className}`}
         >
@@ -76,6 +74,13 @@ export default function LayoutHeader() {
           </Link>
         </div>
       </div>
+      <style jsx>{`
+        .shadow-custom {
+          box-shadow:
+            0 2px 6px -1px rgba(255, 255, 255, 0.1),
+            0 1px 4px -1px rgba(255, 255, 255, 0.06);
+        }
+      `}</style>
     </div>
   );
 }
