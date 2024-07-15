@@ -7,7 +7,13 @@ import { MdOutlineAttachMoney } from 'react-icons/md';
 import Amadeus from 'amadeus';
 import { format, addDays } from 'date-fns';
 import CircularProgress from '@mui/material/CircularProgress';
-
+import { countriesData } from '@/app/countriesData';
+import Link from 'next/link';
+import { GrAttraction } from 'react-icons/gr';
+import { PiAirplaneTakeoff } from 'react-icons/pi';
+import { TiWeatherWindyCloudy } from 'react-icons/ti';
+import { TiWeatherPartlySunny } from 'react-icons/ti';
+import { FaRegMoneyBillAlt } from 'react-icons/fa';
 const amadeus = new Amadeus({
   clientId: process.env.NEXT_PUBLIC_AMADEUS_API || '',
   clientSecret: process.env.NEXT_PUBLIC_AMADEUS_SECRET || '',
@@ -48,7 +54,9 @@ interface FlightData {
 
 export default function Countries() {
   const pathname = usePathname();
-
+  const countryCode = pathname.split('/').pop();
+  // @ts-expect-error
+  const countryData = countriesData[countryCode];
   const [weather, setWeather] = useState<Weather | null>(null);
   const [weatherLoading, setWeatherLoading] = useState(true);
   const [aqi, setAqi] = useState<AQI | null>(null);
@@ -62,17 +70,19 @@ export default function Countries() {
   const [showMore, setShowMore] = useState(false);
 
   useEffect(() => {
-    fetchWeather();
-    fetchAqi();
-    fetchExchangeRate();
-    fetchFlights();
-  }, []);
+    if (countryData) {
+      fetchWeather();
+      fetchAqi();
+      fetchExchangeRate();
+      fetchFlights();
+    }
+  }, [countryData]);
 
   const fetchWeather = async () => {
     setWeatherLoading(true);
     try {
       const response = await axios.get(
-        `https://api.openweathermap.org/data/2.5/weather?q=Madrid&units=metric&appid=${process.env.NEXT_PUBLIC_OPENWEATHER_API}`,
+        `https://api.openweathermap.org/data/2.5/weather?q=${countryData.capital}&units=metric&appid=${process.env.NEXT_PUBLIC_OPENWEATHER_API}`,
       );
       setWeather(response.data);
     } catch (error) {
@@ -86,7 +96,7 @@ export default function Countries() {
     setAqiLoading(true);
     try {
       const response = await axios.get(
-        `https://api.waqi.info/feed/madrid/?token=${process.env.NEXT_PUBLIC_WAQI_API}`,
+        `https://api.waqi.info/feed/${countryData.capital}/?token=${process.env.NEXT_PUBLIC_WAQI_API}`,
       );
       setAqi(response.data.data);
     } catch (error) {
@@ -98,10 +108,10 @@ export default function Countries() {
 
   const getAqiIcon = (aqi: number): string => {
     if (aqi <= 50) return 'Good';
-    if (aqi <= 100) return 'Moderated';
-    if (aqi <= 150) return 'Unhealthy for sensitive';
+    if (aqi <= 100) return 'Moderate';
+    if (aqi <= 150) return 'Unhealthy for sensitive groups';
     if (aqi <= 200) return 'Unhealthy';
-    if (aqi <= 300) return 'Very unhealthy';
+    if (aqi <= 300) return 'Very Unhealthy';
     return 'Hazardous';
   };
 
@@ -109,7 +119,7 @@ export default function Countries() {
     setExchangeRateLoading(true);
     try {
       const response = await axios.get(
-        `https://v6.exchangerate-api.com/v6/${process.env.NEXT_PUBLIC_EXCHANGERATE_API}/latest/USD`,
+        `https://v6.exchangerate-api.com/v6/${process.env.NEXT_PUBLIC_EXCHANGERATE_API}/latest/${countryData.money}`,
       );
       const krwRate = response.data.conversion_rates.KRW;
       setExchangeRate(krwRate);
@@ -127,7 +137,7 @@ export default function Countries() {
     try {
       const response = await amadeus.shopping.flightOffersSearch.get({
         originLocationCode: 'ICN',
-        destinationLocationCode: 'CDG',
+        destinationLocationCode: countryData.airport,
         departureDate: tomorrow,
         adults: '1',
       });
@@ -152,7 +162,7 @@ export default function Countries() {
       try {
         const response = await amadeus.shopping.flightOffersSearch.get({
           originLocationCode: 'ICN',
-          destinationLocationCode: 'CDG',
+          destinationLocationCode: countryData.airport,
           departureDate: date,
           adults: '1',
         });
@@ -169,7 +179,7 @@ export default function Countries() {
 
   const renderFlights = (flights: FlightData[]) => {
     if (!flights || flights.length === 0)
-      return <div className="text-white">Loading...</div>;
+      return <div className="text-white">There is no flight schedule</div>;
 
     return flights.map(({ date, flights }) => (
       <div key={date} className="mb-4">
@@ -178,7 +188,8 @@ export default function Countries() {
           {flights
             .filter(
               (flight) =>
-                flight.itineraries[0].segments[0].arrival.iataCode === 'CDG',
+                flight.itineraries[0].segments[0].arrival.iataCode ===
+                countryData.airport,
             )
             .map((flight, index) => (
               <div key={index} className="w-1/4 p-1">
@@ -199,72 +210,53 @@ export default function Countries() {
       <div className="flex">
         {/* Sidebar */}
         <div className="w-1/6 mt-[9.5vh] px-10 space-y-8">
-          <div
-            className={
-              pathname === '/countries/france'
-                ? 'text-[#00C395]'
-                : 'text-[#d8d8d8]'
-            }
-          >
-            France
-          </div>
-          <div
-            className={
-              pathname === '/countries/japan'
-                ? 'text-[#00C395]'
-                : 'text-[#d8d8d8]'
-            }
-          >
-            Japan
-          </div>
-          <div
-            className={
-              pathname === '/countries/usa'
-                ? 'text-[#00C395]'
-                : 'text-[#d8d8d8]'
-            }
-          >
-            USA
-          </div>
-          <div
-            className={
-              pathname === '/countries/unitedkingdom'
-                ? 'text-[#00C395]'
-                : 'text-[#d8d8d8]'
-            }
-          >
-            United Kingdom
-          </div>
+          {Object.values(countriesData).map((country) => (
+            <Link
+              key={country.code}
+              href={`/countries/${country.lowername}`}
+              className="block"
+            >
+              <div
+                className={
+                  pathname === `/countries/${country.lowername}`
+                    ? 'text-[#00C395]'
+                    : 'text-[#d8d8d8]'
+                }
+              >
+                {country.name}
+              </div>
+            </Link>
+          ))}
         </div>
+
         {/* Main Content */}
         <div className="w-5/6 mt-[9.5vh] mr-10">
           <div className="text-[#00C395] text-sm font-extralight mb-2">
             Countries
           </div>
-          <div className="text-white text-2xl font-bold mb-6">France</div>
+          <div className="text-white text-2xl font-bold mb-6">
+            {countryData.name}
+          </div>
           {/* Attractions */}
           <div className="bg-[#1F2232] p-6 rounded-lg mb-6">
-            <div className="text-xl mb-4">
-              <span className="text-[#00C395] font-bold mr-2">#</span>
+            <div className="text-xl mb-4 flex items-center">
+              <GrAttraction className="text-[#00C395] mr-2 text-2xl" />
               <span className="text-white">Attractions</span>
             </div>
             <div className="flex">
               <div className="min-w-[25%] h-52 relative">
                 <Image
                   src="/tower.jpg"
-                  alt="Eiffel Tower"
+                  alt="Attraction"
                   layout="fill"
                   objectFit="cover"
                   className="rounded-lg"
                 />
               </div>
               <div className="flex flex-col ml-9">
-                <div className="text-white text-lg mb-3">Eiffel Tower</div>
+                <div className="text-white text-lg mb-3">Famous Attraction</div>
                 <div className="text-white w-[80%]">
-                  에펠탑은 프랑스 파리의 상징적 건축물로, 1889년에 프랑스 혁명
-                  100주년을 맞이하여 파리 만국 박람회를 개최하였는데 이 박람회를
-                  상징할만한 기념물로 에펠 탑을 건축하였다. 박람회가 열린 마르스
-                  광장에 출입 관문에 위치해있다.
+                  Description of the attraction.
                 </div>
               </div>
             </div>
@@ -272,9 +264,9 @@ export default function Countries() {
           {/* Weather, AQI, Exchange Rate */}
           <div className="flex justify-between mb-6">
             {/* Weather */}
-            <div className="bg-[#1F2232] p-6 rounded-lg w-[32.5%]">
-              <div className="text-xl mb-4">
-                <span className="text-[#00C395] font-bold mr-2">#</span>
+            <div className="bg-[#1F2232] p-6 rounded-lg w-[32.5%]  ">
+              <div className="text-xl mb-4 flex items-center">
+                <TiWeatherPartlySunny className="text-[#00C395] mr-2 text-2xl" />
                 <span className="text-white">Weather</span>
               </div>
               {weatherLoading ? (
@@ -300,8 +292,8 @@ export default function Countries() {
             </div>
             {/* AQI */}
             <div className="bg-[#1F2232] p-6 rounded-lg w-[32.5%]">
-              <div className="text-xl mb-4">
-                <span className="text-[#00C395] font-bold mr-2">#</span>
+              <div className="text-xl mb-4 flex items-center">
+                <TiWeatherWindyCloudy className="text-[#00C395] mr-2 text-2xl" />
                 <span className="text-white">Air Quality</span>
               </div>
               {aqiLoading ? (
@@ -327,8 +319,8 @@ export default function Countries() {
             </div>
             {/* Exchange Rate */}
             <div className="bg-[#1F2232] p-6 rounded-lg w-[32.5%]">
-              <div className="text-xl mb-4">
-                <span className="text-[#00C395] font-bold mr-2">#</span>
+              <div className="text-xl mb-4 flex items-center">
+                <FaRegMoneyBillAlt className="text-[#00C395] mr-2 text-2xl" />
                 <span className="text-white font-medium">Exchange Rate</span>
               </div>
               {exchangeRateLoading ? (
@@ -338,7 +330,9 @@ export default function Countries() {
               ) : exchangeRate ? (
                 <div className="flex justify-center items-center text-white h-12">
                   <MdOutlineAttachMoney className="text-4xl text-[#00C395]" />
-                  <div className="text-lg">1 USD = {exchangeRate} KRW</div>
+                  <div className="text-lg">
+                    1 {countryData.money} = {exchangeRate} KRW
+                  </div>
                 </div>
               ) : (
                 <div className="text-white h-12">
@@ -349,8 +343,8 @@ export default function Countries() {
           </div>
           {/* Airplane Schedule */}
           <div className="bg-[#1F2232] pt-6 pl-6 pr-6 pb-3 rounded-lg min-h-[14.5rem] ">
-            <div className="text-xl mb-4">
-              <span className="text-[#00C395] font-bold mr-2">#</span>
+            <div className="text-xl mb-4 flex items-center">
+              <PiAirplaneTakeoff className="text-[#00C395] mr-2 text-2xl" />
               <span className="text-white font-medium">Airplane Schedule</span>
             </div>
             {flightsLoading ? (
