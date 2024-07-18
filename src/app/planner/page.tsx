@@ -91,19 +91,9 @@ export default function Contact() {
         body: JSON.stringify({ prompt }),
       });
 
-      // const data = await response.json();
-      // console.log('리턴값:', data.result);
-      // setResult(data.result);
-
-      const text = await response.text();
-      try {
-        const data = JSON.parse(text);
-        console.log('리턴값:', data.result);
-        setResult(data.result);
-      } catch (error) {
-        console.error('응답 파싱 중 오류 발생:', error);
-        console.error('응답 내용:', text);
-      }
+      const data = await response.json();
+      console.log('리턴값:', data.result);
+      setResult(data.result);
     } catch (error) {
       console.error('OpenAI API 요청 중 오류 발생:', error);
     } finally {
