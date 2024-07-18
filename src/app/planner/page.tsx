@@ -91,9 +91,19 @@ export default function Contact() {
         body: JSON.stringify({ prompt }),
       });
 
-      const data = await response.json();
-      console.log('리턴값:', data.result);
-      setResult(data.result);
+      // const data = await response.json();
+      // console.log('리턴값:', data.result);
+      // setResult(data.result);
+
+      const text = await response.text();
+      try {
+        const data = JSON.parse(text);
+        console.log('리턴값:', data.result);
+        setResult(data.result);
+      } catch (error) {
+        console.error('응답 파싱 중 오류 발생:', error);
+        console.error('응답 내용:', text);
+      }
     } catch (error) {
       console.error('OpenAI API 요청 중 오류 발생:', error);
     } finally {
@@ -266,7 +276,7 @@ export default function Contact() {
           <div className="flex justify-end mt-8 w-[64%]">
             <button
               onClick={handleSendClick}
-              className="bg-[#00C395] text-white px-4 py-2 rounded-lg"
+              className="bg-[#00C395] text-white px-4 py-2 rounded-lg hover:bg-[#00b389de]"
             >
               완료
             </button>
