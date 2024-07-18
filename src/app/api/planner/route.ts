@@ -23,7 +23,8 @@ export async function POST(request: Request) {
         { role: 'user', content: prompt },
       ],
       temperature: 0.7,
-      max_tokens: 4096,
+      // max_tokens: 4096,
+      max_tokens: 2000,
     });
 
     if (
