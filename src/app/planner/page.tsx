@@ -105,8 +105,9 @@ export default function Contact() {
     return (
       <div className="flex flex-col items-center justify-center w-screen h-screen bg-[#151825]">
         <CircularProgress style={{ color: '#00C395' }} />
-        <span className="text-white mt-4">
+        <span className="text-white mt-4 text-center">
           여행 계획을 생성중입니다. 잠시만 기다려 주세요.
+          <br />약 20초 소요됩니다.
         </span>
       </div>
     );

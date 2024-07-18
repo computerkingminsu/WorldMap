@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
 
+export const maxDuration = 60;
+export const dynamic = 'force-dynamic';
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API,
 });
@@ -24,7 +26,7 @@ export async function POST(request: Request) {
       ],
       temperature: 0.7,
       // max_tokens: 4096,
-      max_tokens: 2000,
+      max_tokens: 4096,
     });
 
     if (
