@@ -81,7 +81,7 @@ export default function Main() {
     const prompt = inputValue;
     setInputValue('');
     try {
-      const response = await fetch('/api/openai', {
+      const response = await fetch('/api/main', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

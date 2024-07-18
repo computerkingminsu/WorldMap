@@ -1,6 +1,6 @@
 'use client';
 import Image from 'next/image';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { MdOutlineAttachMoney } from 'react-icons/md';
@@ -53,6 +53,7 @@ interface FlightData {
 }
 
 export default function Countries() {
+  const router = useRouter();
   const pathname = usePathname();
   const countryCode = pathname.split('/').pop();
   // @ts-expect-error
@@ -77,6 +78,17 @@ export default function Countries() {
       fetchFlights();
     }
   }, [countryData]);
+
+  useEffect(() => {
+    if (!countryData) {
+      alert('주소가 올바르지 않습니다.');
+      router.push('/');
+    }
+  }, [countryData]);
+
+  if (!countryData) {
+    return null;
+  }
 
   const fetchWeather = async () => {
     setWeatherLoading(true);

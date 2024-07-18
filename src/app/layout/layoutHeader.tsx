@@ -32,12 +32,14 @@ export default function LayoutHeader() {
       }`}
     >
       <div className="flex justify-between items-center h-full px-10">
-        <div
-          className={`text-2xl font-bold cursor-pointer ${roboto.className}`}
-        >
-          <span className="text-[#00C395]">Go</span>
-          <span>Trip</span>
-        </div>
+        <Link href="/">
+          <div
+            className={`text-2xl font-bold cursor-pointer ${roboto.className}`}
+          >
+            <span className="text-[#00C395]">Go</span>
+            <span>Travel</span>
+          </div>
+        </Link>
         <div className="flex space-x-5">
           <Link href="/">
             <div
@@ -61,15 +63,15 @@ export default function LayoutHeader() {
               Countries
             </div>
           </Link>
-          <Link href="/contact">
+          <Link href="/planner">
             <div
               className={`cursor-pointer ${
-                pathname === '/contact'
+                pathname === '/planner'
                   ? 'text-white border-b-[3px] border-[#00C395] pb-1'
                   : 'text-[#c8c8c8]'
               }`}
             >
-              Contact
+              Planner
             </div>
           </Link>
         </div>
