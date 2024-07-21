@@ -50,7 +50,9 @@ export function DatePickerWithRange({ className, onChange }) {
                 format(date.from, 'LLL dd, y')
               )
             ) : (
-              <span className="text-[#888888]">일정을 선택해주세요.</span>
+              <span className="text-[#888888] text-base">
+                일정을 선택해주세요.
+              </span>
             )}
           </Button>
         </PopoverTrigger>

@@ -101,11 +101,24 @@ export default function Contact() {
     }
   };
 
+  // 되돌아가기 눌렀을때 사용
+  const resetForm = () => {
+    setInputValues({
+      age: '',
+      gender: '',
+      budget: '',
+      country: '',
+    });
+    setDateRange(undefined);
+    setErrors({});
+    setResult(null);
+  };
+
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center w-screen h-screen bg-[#151825]">
         <CircularProgress style={{ color: '#00C395' }} />
-        <span className="text-white mt-4 text-center">
+        <span className="text-white mt-4 text-center text-2xl">
           여행 계획을 생성중입니다. 잠시만 기다려 주세요.
           <br />약 20초 소요됩니다.
         </span>
@@ -125,27 +138,29 @@ export default function Contact() {
 
     return (
       <div className="flex flex-col items-center justify-center w-screen h-[calc(100vh-4rem)] mt-[4rem] bg-[#151825]">
-        <span className="text-[#00c395]">
+        <span className="text-[#00c395] text-xl">
           Your Personalized Travel Itinerary
         </span>
         <span className="text-white text-3xl mb-6 mt-2">
           당신에게 추천하는 여행 계획입니다 😉
         </span>
-        <div className="w-[45%] flex justify-center pt-6 mb-6 bg-[#1F2232] rounded-lg overflow-y-auto">
-          <div className="text-white whitespace-pre-wrap">📆 {result}</div>
+        <div className="w-[60%] lg:w-[50%] flex justify-center pt-6 mb-6 bg-[#1F2232] rounded-lg overflow-y-auto">
+          <div className="text-white text-base whitespace-pre-wrap ">
+            📆 {result}
+          </div>
         </div>
         <div className="flex space-x-4">
           <button
-            onClick={() => setResult(null)}
-            className="bg-[#00C395] text-white px-4 py-2 rounded-lg mb-6 hover:bg-[#00b389de]"
+            onClick={resetForm}
+            className="bg-[#00C395] text-xl text-white px-4 py-2 rounded-lg mb-6 hover:bg-[#00b389de]"
           >
             되돌아가기
           </button>
           <button
             onClick={copyToClipboard}
-            className="bg-[#00C395] text-white px-4 py-2 rounded-lg mb-6 hover:bg-[#00b389de]"
+            className="bg-[#00C395] text-xl text-white px-4 py-2 rounded-lg mb-6 hover:bg-[#00b389de]"
           >
-            계획 복사하기
+            일정복사
           </button>
         </div>
       </div>
@@ -154,28 +169,33 @@ export default function Contact() {
 
   return (
     <>
-      <div className="bg-[#151825] w-screen h-screen flex items-center px-48">
+      <div className="bg-[#151825] w-screen h-screen flex justify-center items-center ">
         {/* left 이미지 */}
-        <div className="w-1/2 flex items-center justify-center">
+        <div className="hidden lg:w-1/2 pl-[10%] lg:flex items-center justify-center ">
           <div className="relative h-80 w-80">
-            <Image src={'/planner.png'} alt="image" layout="fill" />
+            <Image
+              src={'/planner/planner.png'}
+              alt="image"
+              layout="fill"
+              objectFit="contain"
+            />
           </div>
         </div>
         {/* right */}
-        <div className="w-1/2 h-[60%] flex flex-col">
-          <span className="text-[#00c395]">Start Your Voyage</span>
+        <div className="w-[60%] lg:w-1/2 h-[60%] flex flex-col px-[5%] lg:px-0 lg:pr-[25%]">
+          <span className="text-[#00c395] text-base">Start Your Voyage</span>
           <span className="text-white text-4xl font-bold mt-2 tracking-wider">
             Create travel plan with AI
             <span className="text-[#00c395] ml-1">.</span>
           </span>
           {/* 나이 성별 */}
-          <div className="flex justify-between mt-8 w-[64%]">
+          <div className="flex justify-between mt-8 w-full">
             <div className="flex flex-col w-[45%] ">
-              <span className="text-[#888888]">나이</span>
+              <span className="text-[#b8b8b8] text-base">나이</span>
               <input
                 name="age"
-                className={`bg-[#1F2232] mt-3 h-7 p-6 rounded-lg text-[#888888] placeholder-[#888888] placeholder:text-sm ${errors.age ? 'border border-red-500' : ''}`}
-                placeholder="나이를 입력해주세요. ex) 27"
+                className={`bg-[#1F2232] mt-3 h-7 p-6 rounded-lg text-[#888888] placeholder-[#888888] text-base placeholder:text-base ${errors.age ? 'border border-red-500' : ''}`}
+                placeholder="ex) 27"
                 value={inputValues.age}
                 onChange={handleInputChange}
               />
@@ -184,7 +204,7 @@ export default function Contact() {
               )}
             </div>
             <div className="flex flex-col w-[45%]">
-              <span className="text-[#888888]">성별</span>
+              <span className="text-[#b8b8b8] text-base">성별</span>
               <Select
                 onValueChange={(value) => handleSelectChange('gender', value)}
               >
@@ -206,12 +226,12 @@ export default function Contact() {
             </div>
           </div>
           {/* 예산 */}
-          <div className="flex justify-between mt-4 w-[64%]">
+          <div className="flex justify-between mt-4 w-full">
             <div className="flex flex-col w-full">
-              <span className="text-[#888888]">예산</span>
+              <span className="text-[#b8b8b8] text-base">예산</span>
               <input
                 name="budget"
-                className={`bg-[#1F2232] mt-3 h-7 p-6 rounded-lg text-[#888888] placeholder-[#888888] placeholder:text-sm ${errors.budget ? 'border border-red-500' : ''}`}
+                className={`bg-[#1F2232] mt-3 h-7 p-6 rounded-lg text-[#888888] placeholder-[#888888] text-base placeholder:text-base ${errors.budget ? 'border border-red-500' : ''}`}
                 placeholder="여행을 떠나는데 사용하실 예산을 입력해주세요. ex) 200만원"
                 value={inputValues.budget}
                 onChange={handleInputChange}
@@ -224,12 +244,12 @@ export default function Contact() {
             </div>
           </div>
           {/* 일정 */}
-          <div className="flex justify-between mt-4 w-[64%]">
+          <div className="flex justify-between mt-4 w-full">
             <div className="flex flex-col w-full">
-              <span className="text-[#888888]">일정</span>
+              <span className="text-[#b8b8b8] text-base">일정</span>
               <DatePickerWithRange
                 onChange={handleDateRangeChange}
-                className={` rounded-lg mt-3 ${errors.duration ? 'border border-red-500' : ''}`}
+                className={`overflow-hidden rounded-lg mt-3 ${errors.duration ? 'border border-red-500' : ''}`}
               />
               {errors.duration && (
                 <span className="text-red-500 text-sm mt-1">
@@ -239,14 +259,15 @@ export default function Contact() {
             </div>
           </div>
           {/* 나라 선택 */}
-          <div className="flex justify-between mt-4 w-[64%]">
+          <div className="flex justify-between mt-4 w-full ">
             <div className="flex flex-col w-full">
-              <span className="text-[#888888]">나라</span>
+              <span className="text-[#b8b8b8] text-base">나라</span>
               <Select
                 onValueChange={(value) => handleSelectChange('country', value)}
               >
                 <SelectTrigger
-                  className={`mt-3 bg-[#1F2232] text-[#888888] h-7 p-6 rounded-lg border ${errors.country ? 'border-red-500' : 'border-none'}`}
+                  className={`mt-3 bg-[#1F2232] text-[#888888] 
+                   h-7 p-6 rounded-lg border ${errors.country ? 'border-red-500' : 'border-none'}`}
                 >
                   <SelectValue placeholder="나라를 선택해주세요" />
                 </SelectTrigger>
@@ -264,12 +285,12 @@ export default function Contact() {
             </div>
           </div>
           {/* submit */}
-          <div className="flex justify-end mt-8 w-[64%]">
+          <div className="flex justify-end mt-8 w-full">
             <button
               onClick={handleSendClick}
-              className="bg-[#00C395] text-white px-4 py-2 rounded-lg hover:bg-[#00b389de]"
+              className="bg-[#00C395] text-white px-4 py-2 rounded-lg hover:bg-[#00b389de] text-base"
             >
-              완료
+              일정 생성
             </button>
           </div>
         </div>

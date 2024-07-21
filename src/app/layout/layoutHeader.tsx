@@ -4,6 +4,7 @@ import { Manrope } from 'next/font/google';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { FiMenu, FiX } from 'react-icons/fi';
 
 const roboto = Manrope({
   weight: '400',
@@ -13,6 +14,7 @@ const roboto = Manrope({
 export default function LayoutHeader() {
   const pathname = usePathname();
   const [scroll, setScroll] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -25,22 +27,24 @@ export default function LayoutHeader() {
     };
   }, []);
 
+  const toggleMenu = () => {
+    setMenuOpen(!menuOpen);
+  };
+
   return (
     <div
-      className={`fixed top-0 left-0 w-screen h-16 z-20 bg-[#151825] text-white transition-shadow duration-300 ${
+      className={`fixed top-0 left-0 w-screen h-16 z-20 text-white transition-shadow duration-300 ${
         scroll ? 'shadow-custom' : ''
-      }`}
+      } ${pathname === '/' ? 'bg-transparent' : 'bg-[#151825]'}`}
     >
       <div className="flex justify-between items-center h-full px-10">
         <Link href="/">
-          <div
-            className={`text-2xl font-bold cursor-pointer ${roboto.className}`}
-          >
-            <span className="text-[#00C395]">Go</span>
-            <span>Travel</span>
+          <div className={` font-bold cursor-pointer ${roboto.className}`}>
+            <span className="text-[#00C395] text-2xl ">Go</span>
+            <span className="text-2xl">Trip</span>
           </div>
         </Link>
-        <div className="flex space-x-5">
+        <div className="hidden sm:flex space-x-5">
           <Link href="/">
             <div
               className={`cursor-pointer ${
@@ -75,7 +79,58 @@ export default function LayoutHeader() {
             </div>
           </Link>
         </div>
+        <button
+          className="sm:hidden "
+          onClick={toggleMenu}
+          aria-label="Toggle menu"
+        >
+          {menuOpen ? (
+            <FiX className="text-3xl" />
+          ) : (
+            <FiMenu className="text-3xl" />
+          )}
+        </button>
       </div>
+      {menuOpen && (
+        <div className="sm:hidden bg-[#151825] px-10 pb-4">
+          <Link href="/">
+            <div
+              className={`cursor-pointer py-2 text-xl ${
+                pathname === '/'
+                  ? 'text-white border-b-[1.5px] border-[#00C395]'
+                  : 'text-[#c8c8c8]'
+              }`}
+              onClick={() => setMenuOpen(false)}
+            >
+              Home
+            </div>
+          </Link>
+          <Link href="/countries/france">
+            <div
+              className={`cursor-pointer py-2 text-xl ${
+                pathname.startsWith('/countries')
+                  ? 'text-white border-b-[1.5px] border-[#00C395]'
+                  : 'text-[#c8c8c8]'
+              }`}
+              onClick={() => setMenuOpen(false)}
+            >
+              Countries
+            </div>
+          </Link>
+          <Link href="/planner">
+            <div
+              className={`cursor-pointer py-2 text-xl ${
+                pathname === '/planner'
+                  ? 'text-white border-b-[1.5px] border-[#00C395]'
+                  : 'text-[#c8c8c8]'
+              }`}
+              onClick={() => setMenuOpen(false)}
+            >
+              Planner
+            </div>
+          </Link>
+        </div>
+      )}
       <style jsx>{`
         .shadow-custom {
           box-shadow:

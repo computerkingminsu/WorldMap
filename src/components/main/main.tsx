@@ -3,23 +3,23 @@ import React, { useEffect, useRef, useState } from 'react';
 import Globe, { GlobeMethods } from 'react-globe.gl';
 import { countriesHex } from '../../app/countriesHex';
 import { countriesData } from '../../app/countriesData';
-import { useRouter } from 'next/navigation';
 import { useWindowSize } from '@react-hook/window-size/throttled';
 import { IoMicOutline } from 'react-icons/io5';
 import { LuSend } from 'react-icons/lu';
 import Flag from 'react-world-flags';
+import CircularProgress from '@mui/material/CircularProgress';
+import Link from 'next/link';
 
 interface CountryLabel {
   lat: number;
   lng: number;
-  country?: string; // 선택적으로 변경
-  info?: string; // 선택적으로 변경
+  country?: string;
+  info?: string;
   name: string;
   code: string;
 }
 
 export default function Main() {
-  const router = useRouter();
   const globeRef = useRef<GlobeMethods>();
   const [width, height] = useWindowSize();
   const [selectedLabel, setSelectedLabel] = useState<string | null>(null);
@@ -27,14 +27,14 @@ export default function Main() {
   const [inputValue, setInputValue] = useState('');
   const [isRecording, setIsRecording] = useState(false);
   const [description, setDescription] = useState('');
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (!globeRef?.current) return;
-    // globe 자동회전 및 초기 위치 설정
     globeRef.current.controls().autoRotate = true;
     globeRef.current.pointOfView({
-      lat: 35.907757,
-      lng: 127.766922,
+      lat: 20,
+      lng: 138,
       altitude: 2,
     });
   }, []);
@@ -42,10 +42,9 @@ export default function Main() {
   const countriesDataValues = Object.values(countriesData);
 
   const handleLabelClick = (label: object) => {
-    const countryLabel = label as CountryLabel; // 타입 캐스팅
+    const countryLabel = label as CountryLabel;
     if (!globeRef?.current) return;
     globeRef.current.controls().autoRotate = false;
-    console.log(countryLabel);
     globeRef.current.pointOfView(
       {
         lat: countryLabel.lat,
@@ -55,7 +54,7 @@ export default function Main() {
       1000,
     );
     setSelectedLabel(countryLabel.name);
-    setDescription(''); // 설명 초기화
+    setDescription('');
     setTimeout(() => {
       setLabelToShow(countryLabel.name);
     }, 1000);
@@ -63,23 +62,29 @@ export default function Main() {
 
   const handleBackClick = () => {
     if (!globeRef?.current) return;
-    globeRef.current.controls().autoRotate = true;
-    globeRef.current.pointOfView(
-      {
-        lat: 35.907757,
-        lng: 127.766922,
-        altitude: 2,
-      },
-      1000,
-    );
-    setLabelToShow(null);
-    setSelectedLabel(null);
-    setDescription(''); // 설명 초기화
+
+    const selectedCountry =
+      countriesData[selectedLabel?.toLowerCase() as keyof typeof countriesData];
+
+    if (selectedCountry) {
+      globeRef.current.controls().autoRotate = true;
+      globeRef.current.pointOfView(
+        {
+          lat: selectedCountry.lat,
+          lng: selectedCountry.lng,
+          altitude: 2,
+        },
+        1000,
+      );
+      setLabelToShow(null);
+      setSelectedLabel(null);
+      setDescription('');
+    }
   };
 
-  const handleSendClick = async () => {
-    const prompt = inputValue;
+  const handleSendClick = async (prompt: string) => {
     setInputValue('');
+    setLoading(true);
     try {
       const response = await fetch('/api/main', {
         method: 'POST',
@@ -92,61 +97,28 @@ export default function Main() {
       const data = await response.json();
       console.log('리턴값:', data.result);
 
-      // 결과값에서 나라이름과 설명 추출
       const [countryName, countryDescription] = data.result
         .split(':')
         .map((str: string) => str.trim());
 
-      // 결과값을 기반으로 줌인
       const targetCountry = Object.values(countriesData).find(
         (country) => country.name === countryName,
       );
 
       if (targetCountry) {
         handleLabelClick(targetCountry as CountryLabel);
-        setDescription(countryDescription); // 설명 저장
+        setDescription(countryDescription);
       }
     } catch (error) {
       console.error('OpenAI API 요청 중 오류 발생:', error);
-    }
-  };
-
-  const recordSend = async (prompt: string) => {
-    setInputValue('');
-    try {
-      const response = await fetch('/api/openai', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ prompt }),
-      });
-
-      const data = await response.json();
-      console.log('리턴값:', data.result);
-
-      // 결과값에서 나라이름과 설명 추출
-      const [countryName, countryDescription] = data.result
-        .split(':')
-        .map((str: string) => str.trim());
-
-      // 결과값을 기반으로 줌인
-      const targetCountry = Object.values(countriesData).find(
-        (country) => country.name === countryName,
-      );
-
-      if (targetCountry) {
-        handleLabelClick(targetCountry as CountryLabel);
-        setDescription(countryDescription); // 설명 저장
-      }
-    } catch (error) {
-      console.error('OpenAI API 요청 중 오류 발생:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
-      handleSendClick();
+      handleSendClick(inputValue);
     }
   };
 
@@ -164,7 +136,7 @@ export default function Main() {
     const SpeechRecognition =
       (window as any).webkitSpeechRecognition || window.SpeechRecognition;
     const recognition = new SpeechRecognition();
-    recognition.lang = 'ko-KR'; // 언어 설정
+    recognition.lang = 'ko-KR';
     recognition.interimResults = false;
     recognition.maxAlternatives = 1;
 
@@ -176,9 +148,9 @@ export default function Main() {
     recognition.onresult = async (event: any) => {
       const transcript: string = event.results[0][0].transcript;
       console.log('Transcript:', transcript);
-      setInputValue(transcript); // 녹음된 텍스트를 inputValue에 저장
+      setInputValue(transcript);
       setIsRecording(false);
-      await recordSend(transcript);
+      await handleSendClick(transcript);
     };
 
     recognition.onerror = () => {
@@ -193,7 +165,7 @@ export default function Main() {
   };
 
   const handleLabelHover = (label: object | null) => {
-    const countryLabel = label as CountryLabel; // 타입 캐스팅
+    const countryLabel = label as CountryLabel;
     if (!globeRef?.current) return;
     if (countryLabel) {
       globeRef.current.controls().autoRotate = false;
@@ -204,15 +176,14 @@ export default function Main() {
 
   return (
     <>
-      <div className="w-screen h-screen bg-[#151825]">
-        {/* Globe */}
+      <div className="w-screen h-screen bg-[#151825] relative">
         <Globe
           ref={globeRef}
-          width={width > 480 ? width : 480}
+          width={width}
           height={height}
           labelsData={countriesDataValues}
           labelText={(d: any) => d.name}
-          labelSize={1.5} // Increase label size
+          labelSize={1.5}
           labelDotRadius={() => 1.8}
           labelAltitude={() => 0.01}
           labelColor={() => '#ffd000'}
@@ -228,9 +199,8 @@ export default function Main() {
           onLabelHover={handleLabelHover}
         />
 
-        {/* 라벨 클릭 시 보여 줌 */}
         {labelToShow && (
-          <div className="absolute top-[23%] left-1/2 transform -translate-x-1/2 bg-white rounded-lg z-10 flex flex-col items-center p-5">
+          <div className="absolute top-[23%] left-1/2 transform -translate-x-1/2 bg-[#1F2232] rounded-lg z-10 flex flex-col items-center p-5">
             {
               <Flag
                 code={
@@ -242,11 +212,11 @@ export default function Main() {
                 style={{ width: '100px', height: '60px', objectFit: 'cover' }}
               />
             }
-            <h3 className="text-lg font-semibold">{selectedLabel}</h3>
+            <h3 className="text-lg  text-white">{selectedLabel}</h3>
             {description ? (
-              <p className="text-center px-4">{description}</p>
+              <p className="text-center px-4 text-white">{description}</p>
             ) : (
-              <p className="text-center px-4">
+              <p className="text-center px-4 text-white">
                 {
                   Object.values(countriesData).find(
                     (country) => country.name === selectedLabel,
@@ -256,23 +226,26 @@ export default function Main() {
             )}
             <div className="mt-4 w-full flex justify-between items-center ">
               <button
-                className="bg-blue-500 text-white px-3 py-1 rounded mr-2"
+                className="bg-[#00c395] text-white px-3 py-1 rounded mr-2 text-sm"
                 onClick={handleBackClick}
               >
-                Back
+                뒤로
               </button>
-              <span className="text-blue-500 cursor-pointer">
-                More Details &gt;
-              </span>
+              {selectedLabel && (
+                <Link href={`/countries/${selectedLabel.toLowerCase()}`}>
+                  <span className="text-[#00c395] cursor-pointer text-sm">
+                    자세히 알아보기 &gt;
+                  </span>
+                </Link>
+              )}
             </div>
           </div>
         )}
-        {/* input */}
         <div className="absolute bottom-5 left-1/2 transform -translate-x-1/2 w-full max-w-lg ">
-          <div className="flex items-center bg-gray-700 text-white rounded-full p-2">
+          <div className="flex items-center bg-[#1F2232] rounded-full p-2 text-base">
             <input
               type="text"
-              className="flex-grow bg-transparent border-none outline-none text-white placeholder-gray-400 px-4"
+              className="flex-grow bg-transparent border-none outline-none text-[#b8b8b8] placeholder-[#888888] px-4"
               placeholder="당신의 예산, 일정, 취향 등을 입력해주세요."
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
@@ -281,17 +254,28 @@ export default function Main() {
             <div className="flex items-center space-x-2 mr-4">
               <IoMicOutline
                 size={30}
-                className="cursor-pointer text-gray-400"
+                className="cursor-pointer text-[#b8b8b8]  "
                 onClick={startListening}
               />
               <LuSend
                 size={25}
-                className="cursor-pointer text-gray-400"
-                onClick={handleSendClick}
+                className="cursor-pointer text-[#b8b8b8]"
+                onClick={() => handleSendClick(inputValue)}
               />
             </div>
           </div>
         </div>
+
+        {(loading || isRecording) && (
+          <div className="absolute top-0 left-0 w-full h-full bg-black bg-opacity-50 flex flex-col items-center justify-center z-20">
+            <CircularProgress style={{ color: '#00C395' }} />
+            <span className="text-white mt-4 text-center">
+              {isRecording
+                ? '녹음중입니다.'
+                : '당신에게 알맞는 나라를 찾고있어요!'}
+            </span>
+          </div>
+        )}
       </div>
     </>
   );

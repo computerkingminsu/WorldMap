@@ -1,6 +1,7 @@
 'use client';
+
 import Image from 'next/image';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { MdOutlineAttachMoney } from 'react-icons/md';
@@ -11,13 +12,22 @@ import { countriesData } from '@/app/countriesData';
 import Link from 'next/link';
 import { GrAttraction } from 'react-icons/gr';
 import { PiAirplaneTakeoff } from 'react-icons/pi';
-import { TiWeatherWindyCloudy } from 'react-icons/ti';
-import { TiWeatherPartlySunny } from 'react-icons/ti';
+import { TiWeatherWindyCloudy, TiWeatherPartlySunny } from 'react-icons/ti';
 import { FaRegMoneyBillAlt } from 'react-icons/fa';
+import Slider from 'react-slick';
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
+import { FiMenu, FiX } from 'react-icons/fi';
 const amadeus = new Amadeus({
   clientId: process.env.NEXT_PUBLIC_AMADEUS_API || '',
   clientSecret: process.env.NEXT_PUBLIC_AMADEUS_SECRET || '',
 });
+
+interface Attraction {
+  image: string;
+  name: string;
+  description: string;
+}
 
 interface Weather {
   name: string;
@@ -53,7 +63,6 @@ interface FlightData {
 }
 
 export default function Countries() {
-  const router = useRouter();
   const pathname = usePathname();
   const countryCode = pathname.split('/').pop();
   // @ts-expect-error
@@ -69,6 +78,7 @@ export default function Countries() {
   const [additionalFlights, setAdditionalFlights] = useState<FlightData[]>([]);
   const [loading, setLoading] = useState(false);
   const [showMore, setShowMore] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     if (countryData) {
@@ -79,17 +89,23 @@ export default function Countries() {
     }
   }, [countryData]);
 
-  useEffect(() => {
-    if (!countryData) {
-      alert('주소가 올바르지 않습니다.');
-      router.push('/');
-    }
-  }, [countryData]);
+  const toggleMenu = () => {
+    setMenuOpen(!menuOpen);
+  };
 
-  if (!countryData) {
-    return null;
-  }
+  // 캐러셀 세팅
+  const settings = {
+    dots: true,
+    infinite: true,
+    speed: 900,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 4000,
+    arrows: false,
+  };
 
+  // 날씨 api 호출
   const fetchWeather = async () => {
     setWeatherLoading(true);
     try {
@@ -104,6 +120,7 @@ export default function Countries() {
     }
   };
 
+  // AQI api 호출
   const fetchAqi = async () => {
     setAqiLoading(true);
     try {
@@ -118,6 +135,7 @@ export default function Countries() {
     }
   };
 
+  // AQI 아이콘 설정
   const getAqiIcon = (aqi: number): string => {
     if (aqi <= 50) return 'Good';
     if (aqi <= 100) return 'Moderate';
@@ -127,6 +145,7 @@ export default function Countries() {
     return 'Hazardous';
   };
 
+  // 환율 api 호출
   const fetchExchangeRate = async () => {
     setExchangeRateLoading(true);
     try {
@@ -142,6 +161,7 @@ export default function Countries() {
     }
   };
 
+  // 항공편 api 호출
   const fetchFlights = async () => {
     setFlightsLoading(true);
     const tomorrow = format(addDays(new Date(), 1), 'yyyy-MM-dd');
@@ -161,6 +181,7 @@ export default function Countries() {
     }
   };
 
+  // 추가 항공편 api 호출
   const fetchAdditionalFlights = async () => {
     setLoading(true);
     const dates = [
@@ -189,13 +210,14 @@ export default function Countries() {
     setShowMore(true);
   };
 
+  // 항공편 렌더링
   const renderFlights = (flights: FlightData[]) => {
     if (!flights || flights.length === 0)
       return <div className="text-white">There is no flight schedule</div>;
 
     return flights.map(({ date, flights }) => (
       <div key={date} className="mb-4">
-        <div className="text-white mb-2">{date}</div>
+        <div className="text-white mb-2 text-base">{date}</div>
         <div className="flex flex-wrap">
           {flights
             .filter(
@@ -205,7 +227,7 @@ export default function Countries() {
             )
             .map((flight, index) => (
               <div key={index} className="w-1/4 p-1">
-                <div className="text-white">
+                <div className="text-white text-base">
                   * {flight.itineraries[0].segments[0].departure.iataCode} →{' '}
                   {flight.itineraries[0].segments[0].arrival.iataCode} at{' '}
                   {flight.itineraries[0].segments[0].departure.at}
@@ -221,7 +243,7 @@ export default function Countries() {
     <div className="w-screen min-h-screen h-full bg-[#151825]">
       <div className="flex">
         {/* Sidebar */}
-        <div className="w-1/6 mt-[9.5vh] px-10 space-y-8">
+        <div className="hidden sm:inline-block w-1/6 mt-[9.5vh] px-10 space-y-8">
           {Object.values(countriesData).map((country) => (
             <Link
               key={country.code}
@@ -242,7 +264,29 @@ export default function Countries() {
         </div>
 
         {/* Main Content */}
-        <div className="w-5/6 mt-[9.5vh] mr-10">
+        <div className="w-full pl-6 pr-6 sm:w-5/6 mt-[7vh] sm:mt-[9.5vh] sm:mr-10">
+          {/* 모바일 사이드바 */}
+          <div className="sm:hidden mb-9 overflow-x-auto no-scrollbar">
+            <div className="flex space-x-4">
+              {Object.values(countriesData).map((country) => (
+                <Link
+                  key={country.code}
+                  href={`/countries/${country.lowername}`}
+                >
+                  <div
+                    className={`text-base mr-5 ${
+                      pathname === `/countries/${country.lowername}`
+                        ? 'text-[#00C395]'
+                        : 'text-[#d8d8d8]'
+                    }`}
+                  >
+                    {country.name}
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+
           <div className="text-[#00C395] text-sm font-extralight mb-2">
             Countries
           </div>
@@ -250,36 +294,46 @@ export default function Countries() {
             {countryData.name}
           </div>
           {/* Attractions */}
-          <div className="bg-[#1F2232] p-6 rounded-lg mb-6">
+          <div className="bg-[#1F2232] p-6 rounded-lg mb-6 text-base">
             <div className="text-xl mb-4 flex items-center">
               <GrAttraction className="text-[#00C395] mr-2 text-2xl" />
-              <span className="text-white">Attractions</span>
+              <span className="text-white text-base">Attractions</span>
             </div>
-            <div className="flex">
-              <div className="min-w-[25%] h-52 relative">
-                <Image
-                  src="/tower.jpg"
-                  alt="Attraction"
-                  layout="fill"
-                  objectFit="cover"
-                  className="rounded-lg"
-                />
-              </div>
-              <div className="flex flex-col ml-9">
-                <div className="text-white text-lg mb-3">Famous Attraction</div>
-                <div className="text-white w-[80%]">
-                  Description of the attraction.
-                </div>
-              </div>
-            </div>
+            <Slider {...settings} className="w-full h-full custom-slider  ">
+              {countryData.attractions.map(
+                (attraction: Attraction, index: number) => (
+                  <>
+                    <div key={index} className="flex text-white ">
+                      <div className="min-w-[40%] max-w-[40%] sm:min-w-[30%] sm:max-w-[30%] h-52 relative ">
+                        <Image
+                          src={attraction.image}
+                          alt={attraction.name}
+                          layout="fill"
+                          objectFit="cover"
+                          className="rounded-lg"
+                          placeholder="blur"
+                          blurDataURL="data:image/webp;base64,UklGRhYAAABXRUJQVlA4IC4AAACwAQCdASoCAAIALmk0mk0iIiIiIgBoSywAAmEAAKADAAQAA3AA/vuUAAA="
+                        />
+                      </div>
+                      <div className="flex flex-col ml-9">
+                        <div className="text-lg mb-3">{attraction.name}</div>
+                        <div className="text-base">
+                          {attraction.description}
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                ),
+              )}
+            </Slider>
           </div>
           {/* Weather, AQI, Exchange Rate */}
-          <div className="flex justify-between mb-6">
+          <div className="flex flex-col sm:flex-row justify-between mb-6">
             {/* Weather */}
-            <div className="bg-[#1F2232] p-6 rounded-lg w-[32.5%]  ">
+            <div className="bg-[#1F2232] p-6 rounded-lg w-full sm:w-[32.5%] mb-6 sm:mb-0">
               <div className="text-xl mb-4 flex items-center">
                 <TiWeatherPartlySunny className="text-[#00C395] mr-2 text-2xl" />
-                <span className="text-white">Weather</span>
+                <span className="text-white text-base">Weather</span>
               </div>
               {weatherLoading ? (
                 <div className="flex justify-center items-center h-12">
@@ -288,55 +342,60 @@ export default function Countries() {
               ) : weather ? (
                 <div className="flex justify-center items-center text-white h-12">
                   <div className="text-lg">{weather.name}</div>
-                  <Image
-                    src={`http://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`}
-                    alt="weather icon"
-                    width={80}
-                    height={80}
-                  />
+                  <div className="relative w-20 h-20">
+                    <Image
+                      src={`http://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`}
+                      alt="weather icon"
+                      layout="fill"
+                      objectFit="contain"
+                    />
+                  </div>
                   <div className="text-lg">{weather.main.temp}°</div>
                 </div>
               ) : (
-                <div className="text-white h-12">
+                <div className="text-white h-12 text-base">
                   Error loading weather data
                 </div>
               )}
             </div>
             {/* AQI */}
-            <div className="bg-[#1F2232] p-6 rounded-lg w-[32.5%]">
+            <div className="bg-[#1F2232] p-6 rounded-lg  w-full sm:w-[32.5%] mb-6 sm:mb-0">
               <div className="text-xl mb-4 flex items-center">
                 <TiWeatherWindyCloudy className="text-[#00C395] mr-2 text-2xl" />
-                <span className="text-white">Air Quality</span>
+                <span className="text-white text-base">Air Quality</span>
               </div>
               {aqiLoading ? (
                 <div className="flex justify-center items-center h-12">
                   <CircularProgress style={{ color: '#00C395' }} />
                 </div>
               ) : aqi ? (
-                <div className="flex justify-center items-center text-white h-12">
-                  <Image
-                    src="/aqi.png"
-                    alt="aqi icon"
-                    width={60}
-                    height={60}
-                    className="mb-2 ml-4 mr-4"
-                  />
-                  <div className="text-lg">
+                <div className="flex justify-center items-center text-white h-12 ">
+                  <div className="relative w-14 h-14 mr-4">
+                    <Image
+                      src="/countries/aqi.png"
+                      alt="aqi icon"
+                      layout="fill"
+                      objectFit="contain"
+                    />
+                  </div>
+                  <div className="relative z-10 text-lg">
                     {aqi.aqi} : {getAqiIcon(aqi.aqi)}
                   </div>
                 </div>
               ) : (
-                <div className="text-white h-12">Error loading AQI data</div>
+                <div className="text-white h-12 text-base">
+                  Error loading AQI data
+                </div>
               )}
             </div>
             {/* Exchange Rate */}
-            <div className="bg-[#1F2232] p-6 rounded-lg w-[32.5%]">
+            <div className="bg-[#1F2232] p-6 rounded-lg  w-full sm:w-[32.5%]">
               <div className="text-xl mb-4 flex items-center">
                 <FaRegMoneyBillAlt className="text-[#00C395] mr-2 text-2xl" />
-                <span className="text-white font-medium">Exchange Rate</span>
+                <span className="text-white text-base">Exchange Rate</span>
               </div>
               {exchangeRateLoading ? (
-                <div className="flex justify-center items-center h-12">
+                <div className="flex justify-center items-center h-12 ">
                   <CircularProgress style={{ color: '#00C395' }} />
                 </div>
               ) : exchangeRate ? (
@@ -354,23 +413,25 @@ export default function Countries() {
             </div>
           </div>
           {/* Airplane Schedule */}
-          <div className="bg-[#1F2232] pt-6 pl-6 pr-6 pb-3 rounded-lg min-h-[14.5rem] ">
+          <div className="bg-[#1F2232] pt-6 pl-6 pr-6 pb-3 rounded-lg min-h-[14.5rem]">
             <div className="text-xl mb-4 flex items-center">
               <PiAirplaneTakeoff className="text-[#00C395] mr-2 text-2xl" />
-              <span className="text-white font-medium">Airplane Schedule</span>
+              <span className="text-white text-base">Airplane Schedule</span>
             </div>
             {flightsLoading ? (
-              <div className="flex justify-center items-center h-12">
+              <div className="flex justify-center items-center h-12 ">
                 <CircularProgress style={{ color: '#00C395' }} />
               </div>
             ) : (
-              <div className="flex flex-wrap">{renderFlights(flights)}</div>
+              <div className="flex flex-wrap text-base">
+                {renderFlights(flights)}
+              </div>
             )}
             {!showMore && !loading && !flightsLoading && (
               <div className="text-center mt-3">
                 <button
                   onClick={fetchAdditionalFlights}
-                  className="text-[#00C395]"
+                  className="text-[#00C395] text-base"
                 >
                   더 알아보기
                 </button>
