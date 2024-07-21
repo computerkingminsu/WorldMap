@@ -241,7 +241,7 @@ export default function Main() {
             </div>
           </div>
         )}
-        <div className="absolute bottom-5 left-1/2 transform -translate-x-1/2 w-full max-w-lg ">
+        <div className="fixed  bottom-5 left-1/2 transform -translate-x-1/2 w-full max-w-lg ">
           <div className="flex items-center bg-[#1F2232] rounded-full p-2 text-base">
             <input
               type="text"
