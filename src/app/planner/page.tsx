@@ -169,13 +169,13 @@ export default function Contact() {
         <div className="flex space-x-4">
           <button
             onClick={resetForm}
-            className="bg-[#00C395] text-xl text-white px-4 py-2 rounded-lg mb-6 hover:bg-[#00b389de]"
+            className="bg-[#00C395] text-base text-white px-4 py-2 rounded-lg mb-6 hover:bg-[#00b389de]"
           >
             되돌아가기
           </button>
           <button
             onClick={copyToClipboard}
-            className="bg-[#00C395] text-xl text-white px-4 py-2 rounded-lg mb-6 hover:bg-[#00b389de]"
+            className="bg-[#00C395] text-base text-white px-4 py-2 rounded-lg mb-6 hover:bg-[#00b389de]"
           >
             일정복사
           </button>

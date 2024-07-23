@@ -234,7 +234,6 @@ export default function Countries() {
     ));
   };
 
-  console.log(countryData.attractions);
   return (
     <div className="w-screen min-h-screen h-full bg-[#151825]">
       <div className="flex">
