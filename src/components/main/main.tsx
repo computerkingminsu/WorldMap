@@ -9,6 +9,8 @@ import { LuSend } from 'react-icons/lu';
 import Flag from 'react-world-flags';
 import CircularProgress from '@mui/material/CircularProgress';
 import Link from 'next/link';
+import Alert from '@mui/material/Alert';
+import Snackbar from '@mui/material/Snackbar';
 
 interface CountryLabel {
   lat: number;
@@ -81,8 +83,13 @@ export default function Main() {
       setDescription('');
     }
   };
+  const [showAlert, setShowAlert] = useState(false);
 
   const handleSendClick = async (prompt: string) => {
+    if (!prompt.trim()) {
+      setShowAlert(true);
+      return;
+    }
     setInputValue('');
     setLoading(true);
     try {
@@ -275,6 +282,24 @@ export default function Main() {
           </div>
         )}
       </div>
+      <Snackbar
+        open={showAlert}
+        autoHideDuration={2000}
+        onClose={() => setShowAlert(false)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert
+          onClose={() => setShowAlert(false)}
+          severity="warning"
+          sx={{
+            backgroundColor: '#0f121d',
+            color: 'white',
+            borderRadius: '10px',
+          }}
+        >
+          정보를 입력해주세요.
+        </Alert>
+      </Snackbar>
     </>
   );
 }
