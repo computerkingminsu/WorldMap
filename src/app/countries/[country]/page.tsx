@@ -67,7 +67,6 @@ export default function Countries() {
   const countryCode = pathname.split('/').pop();
   //@ts-ignore
   const countryData = countriesData[countryCode];
-
   const [weather, setWeather] = useState<Weather | null>(null);
   const [weatherLoading, setWeatherLoading] = useState(true);
   const [aqi, setAqi] = useState<AQI | null>(null);
@@ -235,6 +234,7 @@ export default function Countries() {
     ));
   };
 
+  console.log(countryData.attractions);
   return (
     <div className="w-screen min-h-screen h-full bg-[#151825]">
       <div className="flex">
@@ -298,8 +298,8 @@ export default function Countries() {
             <Slider {...settings} className="w-full h-full custom-slider">
               {countryData.attractions.map(
                 (attraction: Attraction, index: number) => (
-                  <>
-                    <div key={index} className="flex text-white">
+                  <div key={index}>
+                    <div className="flex text-white">
                       <div className="min-w-[40%] max-w-[40%] sm:min-w-[30%] sm:max-w-[30%] h-52 relative">
                         <Image
                           src={attraction.image}
@@ -318,7 +318,7 @@ export default function Countries() {
                         </div>
                       </div>
                     </div>
-                  </>
+                  </div>
                 ),
               )}
             </Slider>
