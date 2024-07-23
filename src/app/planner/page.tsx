@@ -42,6 +42,24 @@ export default function Contact() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<string | null>(null);
   const { toast } = useToast();
+  const countries = [
+    '프랑스',
+    '이탈리아',
+    '싱가포르',
+    '스페인',
+    '튀르키예',
+    '오스트레일리아',
+    '일본',
+    '베트남',
+    '태국',
+    '필리핀',
+    '중국',
+    '브라질',
+    '아르헨티나',
+    '페루',
+    '칠레',
+    '콜롬비아',
+  ];
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
 
@@ -92,7 +110,6 @@ export default function Contact() {
       });
 
       const data = await response.json();
-      console.log('리턴값:', data.result);
       setResult(data.result);
     } catch (error) {
       console.error('OpenAI API 요청 중 오류 발생:', error);
@@ -272,9 +289,11 @@ export default function Contact() {
                   <SelectValue placeholder="나라를 선택해주세요" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="일본">일본</SelectItem>
-                  <SelectItem value="프랑스">프랑스</SelectItem>
-                  <SelectItem value="독일">독일</SelectItem>
+                  {countries.map((country) => (
+                    <SelectItem key={country} value={country}>
+                      {country}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
               {errors.country && (

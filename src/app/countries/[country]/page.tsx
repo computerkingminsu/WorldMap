@@ -17,7 +17,7 @@ import { FaRegMoneyBillAlt } from 'react-icons/fa';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-import { FiMenu, FiX } from 'react-icons/fi';
+
 const amadeus = new Amadeus({
   clientId: process.env.NEXT_PUBLIC_AMADEUS_API || '',
   clientSecret: process.env.NEXT_PUBLIC_AMADEUS_SECRET || '',
@@ -65,8 +65,9 @@ interface FlightData {
 export default function Countries() {
   const pathname = usePathname();
   const countryCode = pathname.split('/').pop();
-  // @ts-expect-error
+  //@ts-ignore
   const countryData = countriesData[countryCode];
+
   const [weather, setWeather] = useState<Weather | null>(null);
   const [weatherLoading, setWeatherLoading] = useState(true);
   const [aqi, setAqi] = useState<AQI | null>(null);
@@ -78,7 +79,6 @@ export default function Countries() {
   const [additionalFlights, setAdditionalFlights] = useState<FlightData[]>([]);
   const [loading, setLoading] = useState(false);
   const [showMore, setShowMore] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     if (countryData) {
@@ -88,10 +88,6 @@ export default function Countries() {
       fetchFlights();
     }
   }, [countryData]);
-
-  const toggleMenu = () => {
-    setMenuOpen(!menuOpen);
-  };
 
   // 캐러셀 세팅
   const settings = {
@@ -288,7 +284,7 @@ export default function Countries() {
           </div>
 
           <div className="text-[#00C395] text-sm font-extralight mb-2">
-            Countries
+            Country
           </div>
           <div className="text-white text-2xl font-bold mb-6">
             {countryData.name}
@@ -317,7 +313,7 @@ export default function Countries() {
                       </div>
                       <div className="flex flex-col ml-9">
                         <div className="text-lg mb-3">{attraction.name}</div>
-                        <div className="text-base">
+                        <div className="text-base  2xl:w-[80%]">
                           {attraction.description}
                         </div>
                       </div>

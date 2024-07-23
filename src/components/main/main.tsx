@@ -95,8 +95,6 @@ export default function Main() {
       });
 
       const data = await response.json();
-      console.log('리턴값:', data.result);
-
       const [countryName, countryDescription] = data.result
         .split(':')
         .map((str: string) => str.trim());
@@ -224,7 +222,7 @@ export default function Main() {
                 }
               </p>
             )}
-            <div className="mt-4 w-full flex justify-between items-center ">
+            <div className="mt-4 w-full flex justify-between items-center px-2 ">
               <button
                 className="bg-[#00c395] text-white px-3 py-1 rounded mr-2 text-sm"
                 onClick={handleBackClick}
