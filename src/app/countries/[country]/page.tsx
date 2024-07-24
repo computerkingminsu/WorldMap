@@ -235,10 +235,10 @@ export default function Countries() {
   };
 
   return (
-    <div className="w-screen min-h-screen h-full bg-[#151825]">
+    <main className="w-screen min-h-screen h-full bg-[#151825]">
       <div className="flex">
         {/* Sidebar */}
-        <div className="hidden sm:inline-block w-1/6 mt-[9.5vh] px-10 space-y-8">
+        <aside className="hidden sm:inline-block w-1/6 mt-[9.5vh] px-10 space-y-8">
           {Object.values(countriesData).map((country) => (
             <Link
               key={country.code}
@@ -256,12 +256,12 @@ export default function Countries() {
               </div>
             </Link>
           ))}
-        </div>
+        </aside>
 
         {/* Main Content */}
-        <div className="w-full pl-6 pr-6 sm:w-5/6 mt-[7vh] sm:mt-[9.5vh] sm:mr-10">
+        <section className="w-full pl-6 pr-6 sm:w-5/6 mt-[7vh] sm:mt-[9.5vh] sm:mr-10">
           {/* 모바일 사이드바 */}
-          <div className="sm:hidden mb-9 overflow-x-auto no-scrollbar">
+          <nav className="sm:hidden mb-9 overflow-x-auto no-scrollbar">
             <div className="flex space-x-4">
               {Object.values(countriesData).map((country) => (
                 <Link
@@ -280,20 +280,21 @@ export default function Countries() {
                 </Link>
               ))}
             </div>
-          </div>
+          </nav>
 
-          <div className="text-[#00C395] text-sm font-extralight mb-2">
+          <header className="text-[#00C395] text-sm font-extralight mb-2">
             Country
-          </div>
-          <div className="text-white text-2xl font-bold mb-6">
+          </header>
+          <h1 className="text-white text-2xl font-bold mb-6">
             {countryData.name}
-          </div>
+          </h1>
+
           {/* Attractions */}
-          <div className="bg-[#1F2232] p-6 rounded-lg mb-6 text-base">
-            <div className="text-xl mb-4 flex items-center">
+          <section className="bg-[#1F2232] p-6 rounded-lg mb-6 text-base">
+            <header className="text-xl mb-4 flex items-center">
               <GrAttraction className="text-[#00C395] mr-2 text-2xl" />
               <span className="text-white text-base">Attractions</span>
-            </div>
+            </header>
             <Slider {...settings} className="w-full h-full custom-slider">
               {countryData.attractions.map(
                 (attraction: Attraction, index: number) => (
@@ -312,7 +313,7 @@ export default function Countries() {
                       </div>
                       <div className="flex flex-col ml-9">
                         <div className="text-lg mb-3">{attraction.name}</div>
-                        <div className="text-base  2xl:w-[80%]">
+                        <div className="text-base 2xl:w-[80%]">
                           {attraction.description}
                         </div>
                       </div>
@@ -321,15 +322,16 @@ export default function Countries() {
                 ),
               )}
             </Slider>
-          </div>
+          </section>
+
           {/* Weather, AQI, Exchange Rate */}
-          <div className="flex flex-col sm:flex-row justify-between mb-6">
+          <section className="flex flex-col sm:flex-row justify-between mb-6">
             {/* Weather */}
-            <div className="bg-[#1F2232] p-6 rounded-lg w-full sm:w-[32.5%] mb-6 sm:mb-0">
-              <div className="text-xl mb-4 flex items-center">
+            <article className="bg-[#1F2232] p-6 rounded-lg w-full sm:w-[32.5%] mb-6 sm:mb-0">
+              <header className="text-xl mb-4 flex items-center">
                 <TiWeatherPartlySunny className="text-[#00C395] mr-2 text-2xl" />
                 <span className="text-white text-base">Weather</span>
-              </div>
+              </header>
               {weatherLoading ? (
                 <div className="flex justify-center items-center h-12">
                   <CircularProgress style={{ color: '#00C395' }} />
@@ -352,19 +354,20 @@ export default function Countries() {
                   Error loading weather data
                 </div>
               )}
-            </div>
+            </article>
+
             {/* AQI */}
-            <div className="bg-[#1F2232] p-6 rounded-lg  w-full sm:w-[32.5%] mb-6 sm:mb-0">
-              <div className="text-xl mb-4 flex items-center">
+            <article className="bg-[#1F2232] p-6 rounded-lg w-full sm:w-[32.5%] mb-6 sm:mb-0">
+              <header className="text-xl mb-4 flex items-center">
                 <TiWeatherWindyCloudy className="text-[#00C395] mr-2 text-2xl" />
                 <span className="text-white text-base">Air Quality</span>
-              </div>
+              </header>
               {aqiLoading ? (
                 <div className="flex justify-center items-center h-12">
                   <CircularProgress style={{ color: '#00C395' }} />
                 </div>
               ) : aqi ? (
-                <div className="flex justify-center items-center text-white h-12 ">
+                <div className="flex justify-center items-center text-white h-12">
                   <div className="relative w-14 h-14 mr-4">
                     <Image
                       src="/countries/aqi.png"
@@ -382,15 +385,16 @@ export default function Countries() {
                   Error loading AQI data
                 </div>
               )}
-            </div>
+            </article>
+
             {/* Exchange Rate */}
-            <div className="bg-[#1F2232] p-6 rounded-lg  w-full sm:w-[32.5%]">
-              <div className="text-xl mb-4 flex items-center">
+            <article className="bg-[#1F2232] p-6 rounded-lg w-full sm:w-[32.5%]">
+              <header className="text-xl mb-4 flex items-center">
                 <FaRegMoneyBillAlt className="text-[#00C395] mr-2 text-2xl" />
                 <span className="text-white text-base">Exchange Rate</span>
-              </div>
+              </header>
               {exchangeRateLoading ? (
-                <div className="flex justify-center items-center h-12 ">
+                <div className="flex justify-center items-center h-12">
                   <CircularProgress style={{ color: '#00C395' }} />
                 </div>
               ) : exchangeRate ? (
@@ -405,16 +409,17 @@ export default function Countries() {
                   Error loading exchange rate data
                 </div>
               )}
-            </div>
-          </div>
+            </article>
+          </section>
+
           {/* Airplane Schedule */}
-          <div className="bg-[#1F2232] pt-6 pl-6 pr-6 pb-3 rounded-lg min-h-[14.5rem]">
-            <div className="text-xl mb-4 flex items-center">
+          <section className="bg-[#1F2232] pt-6 pl-6 pr-6 pb-3 rounded-lg min-h-[14.5rem]">
+            <header className="text-xl mb-4 flex items-center">
               <PiAirplaneTakeoff className="text-[#00C395] mr-2 text-2xl" />
               <span className="text-white text-base">Airplane Schedule</span>
-            </div>
+            </header>
             {flightsLoading ? (
-              <div className="flex justify-center items-center h-12 ">
+              <div className="flex justify-center items-center h-12">
                 <CircularProgress style={{ color: '#00C395' }} />
               </div>
             ) : (
@@ -423,14 +428,14 @@ export default function Countries() {
               </div>
             )}
             {!showMore && !loading && !flightsLoading && (
-              <div className="text-center mt-3">
+              <footer className="text-center mt-3">
                 <button
                   onClick={fetchAdditionalFlights}
                   className="text-[#00C395] text-base"
                 >
                   더 알아보기
                 </button>
-              </div>
+              </footer>
             )}
             {loading && (
               <div className="text-center">
@@ -442,9 +447,9 @@ export default function Countries() {
                 {renderFlights(additionalFlights)}
               </div>
             )}
-          </div>
-        </div>
+          </section>
+        </section>
       </div>
-    </div>
+    </main>
   );
 }

@@ -32,19 +32,19 @@ export default function LayoutHeader() {
   };
 
   return (
-    <div
+    <header
       className={`fixed top-0 left-0 w-screen h-16 z-20 text-white transition-shadow duration-300 ${
         scroll ? 'shadow-custom' : ''
       } ${pathname === '/' ? 'bg-transparent' : 'bg-[#151825]'}`}
     >
       <div className="flex justify-between items-center h-full px-10">
         <Link href="/">
-          <div className={` font-bold cursor-pointer ${roboto.className}`}>
-            <span className="text-[#00C395] text-2xl ">Go</span>
+          <div className={`font-bold cursor-pointer ${roboto.className}`}>
+            <span className="text-[#00C395] text-2xl">Go</span>
             <span className="text-2xl">Trip</span>
           </div>
         </Link>
-        <div className="hidden sm:flex space-x-5">
+        <nav className="hidden sm:flex space-x-5">
           <Link href="/">
             <div
               className={`cursor-pointer ${
@@ -78,9 +78,9 @@ export default function LayoutHeader() {
               Planner
             </div>
           </Link>
-        </div>
+        </nav>
         <button
-          className="sm:hidden "
+          className="sm:hidden"
           onClick={toggleMenu}
           aria-label="Toggle menu"
         >
@@ -92,7 +92,7 @@ export default function LayoutHeader() {
         </button>
       </div>
       {menuOpen && (
-        <div className="sm:hidden bg-[#151825] px-10 pb-4">
+        <nav className="sm:hidden bg-[#151825] px-10 pb-4">
           <Link href="/">
             <div
               className={`cursor-pointer py-2 text-xl ${
@@ -129,7 +129,7 @@ export default function LayoutHeader() {
               Planner
             </div>
           </Link>
-        </div>
+        </nav>
       )}
       <style jsx>{`
         .shadow-custom {
@@ -138,6 +138,6 @@ export default function LayoutHeader() {
             0 1px 4px -1px rgba(255, 255, 255, 0.06);
         }
       `}</style>
-    </div>
+    </header>
   );
 }

@@ -181,7 +181,7 @@ export default function Main() {
 
   return (
     <>
-      <div className="w-screen h-screen bg-[#151825] relative">
+      <main className="w-screen h-screen bg-[#151825] relative">
         <Globe
           ref={globeRef}
           width={width}
@@ -205,31 +205,24 @@ export default function Main() {
         />
 
         {labelToShow && (
-          <div className="absolute top-[23%] left-1/2 transform -translate-x-1/2 bg-[#1F2232] rounded-lg z-10 flex flex-col items-center p-5">
-            {
-              <Flag
-                code={
-                  Object.values(countriesData).find(
-                    (country) => country.name === selectedLabel,
-                  )?.code
-                }
-                className="mb-4 mt-1"
-                style={{ width: '100px', height: '60px', objectFit: 'cover' }}
-              />
-            }
-            <h3 className="text-lg  text-white">{selectedLabel}</h3>
-            {description ? (
-              <p className="text-center px-4 text-white">{description}</p>
-            ) : (
-              <p className="text-center px-4 text-white">
-                {
-                  Object.values(countriesData).find(
-                    (country) => country.name === selectedLabel,
-                  )?.info
-                }
-              </p>
-            )}
-            <div className="mt-4 w-full flex justify-between items-center px-2 ">
+          <section className="absolute top-[23%] left-1/2 transform -translate-x-1/2 bg-[#1F2232] rounded-lg z-10 flex flex-col items-center p-5">
+            <Flag
+              code={
+                Object.values(countriesData).find(
+                  (country) => country.name === selectedLabel,
+                )?.code
+              }
+              className="mb-4 mt-1"
+              style={{ width: '100px', height: '60px', objectFit: 'cover' }}
+            />
+            <h3 className="text-lg text-white">{selectedLabel}</h3>
+            <p className="text-center px-4 text-white">
+              {description ||
+                Object.values(countriesData).find(
+                  (country) => country.name === selectedLabel,
+                )?.info}
+            </p>
+            <nav className="mt-4 w-full flex justify-between items-center px-2">
               <button
                 className="bg-[#00c395] text-white px-3 py-1 rounded mr-2 text-sm"
                 onClick={handleBackClick}
@@ -243,10 +236,10 @@ export default function Main() {
                   </span>
                 </Link>
               )}
-            </div>
-          </div>
+            </nav>
+          </section>
         )}
-        <div className="fixed  bottom-5 left-1/2 transform -translate-x-1/2 w-full max-w-lg ">
+        <footer className="fixed bottom-5 left-1/2 transform -translate-x-1/2 w-full max-w-lg">
           <div className="flex items-center bg-[#1F2232] rounded-full p-2 text-base">
             <input
               type="text"
@@ -259,7 +252,7 @@ export default function Main() {
             <div className="flex items-center space-x-2 mr-4">
               <IoMicOutline
                 size={30}
-                className="cursor-pointer text-[#b8b8b8]  "
+                className="cursor-pointer text-[#b8b8b8]"
                 onClick={startListening}
               />
               <LuSend
@@ -269,7 +262,7 @@ export default function Main() {
               />
             </div>
           </div>
-        </div>
+        </footer>
 
         {(loading || isRecording) && (
           <div className="absolute top-0 left-0 w-full h-full bg-black bg-opacity-50 flex flex-col items-center justify-center z-20">
@@ -281,7 +274,7 @@ export default function Main() {
             </span>
           </div>
         )}
-      </div>
+      </main>
       <Snackbar
         open={showAlert}
         autoHideDuration={2000}

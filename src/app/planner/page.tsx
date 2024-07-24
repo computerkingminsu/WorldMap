@@ -186,9 +186,9 @@ export default function Contact() {
 
   return (
     <>
-      <div className="bg-[#151825] w-screen h-screen flex justify-center items-center ">
+      <main className="bg-[#151825] w-screen h-screen flex justify-center items-center">
         {/* left 이미지 */}
-        <div className="hidden lg:w-1/2 pl-[10%] lg:flex items-center justify-center ">
+        <section className="hidden lg:w-1/2 pl-[10%] lg:flex items-center justify-center">
           <div className="relative h-80 w-80">
             <Image
               src={'/planner/planner.png'}
@@ -197,19 +197,24 @@ export default function Contact() {
               objectFit="contain"
             />
           </div>
-        </div>
+        </section>
         {/* right */}
-        <div className="w-[60%] lg:w-1/2 h-[60%] flex flex-col px-[5%] lg:px-0 lg:pr-[25%]">
-          <span className="text-[#00c395] text-base">Start Your Voyage</span>
-          <span className="text-white text-4xl font-bold mt-2 tracking-wider">
-            Create travel plan with AI
-            <span className="text-[#00c395] ml-1">.</span>
-          </span>
+        <section className="w-[60%] lg:w-1/2 h-[60%] flex flex-col px-[5%] lg:px-0 lg:pr-[25%]">
+          <header>
+            <span className="text-[#00c395] text-base">Start Your Voyage</span>
+            <h1 className="text-white text-4xl font-bold mt-2 tracking-wider">
+              Create travel plan with AI
+              <span className="text-[#00c395] ml-1">.</span>
+            </h1>
+          </header>
           {/* 나이 성별 */}
           <div className="flex justify-between mt-8 w-full">
-            <div className="flex flex-col w-[45%] ">
-              <span className="text-[#b8b8b8] text-base">나이</span>
+            <div className="flex flex-col w-[45%]">
+              <label htmlFor="age" className="text-[#b8b8b8] text-base">
+                나이
+              </label>
               <input
+                id="age"
                 name="age"
                 className={`bg-[#1F2232] mt-3 h-7 p-6 rounded-lg text-[#888888] placeholder-[#888888] text-base placeholder:text-base ${errors.age ? 'border border-red-500' : ''}`}
                 placeholder="ex) 27"
@@ -221,11 +226,14 @@ export default function Contact() {
               )}
             </div>
             <div className="flex flex-col w-[45%]">
-              <span className="text-[#b8b8b8] text-base">성별</span>
+              <label htmlFor="gender" className="text-[#b8b8b8] text-base">
+                성별
+              </label>
               <Select
                 onValueChange={(value) => handleSelectChange('gender', value)}
               >
                 <SelectTrigger
+                  id="gender"
                   className={`mt-3 bg-[#1F2232] text-[#888888] h-7 p-6 rounded-lg border ${errors.gender ? 'border-red-500' : 'border-none'}`}
                 >
                   <SelectValue placeholder="성별" />
@@ -245,8 +253,11 @@ export default function Contact() {
           {/* 예산 */}
           <div className="flex justify-between mt-4 w-full">
             <div className="flex flex-col w-full">
-              <span className="text-[#b8b8b8] text-base">예산</span>
+              <label htmlFor="budget" className="text-[#b8b8b8] text-base">
+                예산
+              </label>
               <input
+                id="budget"
                 name="budget"
                 className={`bg-[#1F2232] mt-3 h-7 p-6 rounded-lg text-[#888888] placeholder-[#888888] text-base placeholder:text-base ${errors.budget ? 'border border-red-500' : ''}`}
                 placeholder="여행을 떠나는데 사용하실 예산을 입력해주세요. ex) 200만원"
@@ -263,7 +274,9 @@ export default function Contact() {
           {/* 일정 */}
           <div className="flex justify-between mt-4 w-full">
             <div className="flex flex-col w-full">
-              <span className="text-[#b8b8b8] text-base">일정</span>
+              <label htmlFor="dateRange" className="text-[#b8b8b8] text-base">
+                일정
+              </label>
               <DatePickerWithRange
                 onChange={handleDateRangeChange}
                 className={`overflow-hidden rounded-lg mt-3 ${errors.duration ? 'border border-red-500' : ''}`}
@@ -276,15 +289,17 @@ export default function Contact() {
             </div>
           </div>
           {/* 나라 선택 */}
-          <div className="flex justify-between mt-4 w-full ">
+          <div className="flex justify-between mt-4 w-full">
             <div className="flex flex-col w-full">
-              <span className="text-[#b8b8b8] text-base">나라</span>
+              <label htmlFor="country" className="text-[#b8b8b8] text-base">
+                나라
+              </label>
               <Select
                 onValueChange={(value) => handleSelectChange('country', value)}
               >
                 <SelectTrigger
-                  className={`mt-3 bg-[#1F2232] text-[#888888] 
-                   h-7 p-6 rounded-lg border ${errors.country ? 'border-red-500' : 'border-none'}`}
+                  id="country"
+                  className={`mt-3 bg-[#1F2232] text-[#888888] h-7 p-6 rounded-lg border ${errors.country ? 'border-red-500' : 'border-none'}`}
                 >
                   <SelectValue placeholder="나라를 선택해주세요" />
                 </SelectTrigger>
@@ -312,8 +327,8 @@ export default function Contact() {
               일정 생성
             </button>
           </div>
-        </div>
-      </div>
+        </section>
+      </main>
     </>
   );
 }
