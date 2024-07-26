@@ -91,51 +91,59 @@ export default function LayoutHeader() {
           )}
         </button>
       </div>
-      {menuOpen && (
-        <nav className="sm:hidden bg-[#151825] px-10 pb-4">
-          <Link href="/">
-            <div
-              className={`cursor-pointer py-2 text-xl ${
-                pathname === '/'
-                  ? 'text-white border-b-[1.5px] border-[#00C395]'
-                  : 'text-[#c8c8c8]'
-              }`}
-              onClick={() => setMenuOpen(false)}
-            >
-              Home
-            </div>
-          </Link>
-          <Link href="/countries/france">
-            <div
-              className={`cursor-pointer py-2 text-xl ${
-                pathname.startsWith('/countries')
-                  ? 'text-white border-b-[1.5px] border-[#00C395]'
-                  : 'text-[#c8c8c8]'
-              }`}
-              onClick={() => setMenuOpen(false)}
-            >
-              Countries
-            </div>
-          </Link>
-          <Link href="/planner">
-            <div
-              className={`cursor-pointer py-2 text-xl ${
-                pathname === '/planner'
-                  ? 'text-white border-b-[1.5px] border-[#00C395]'
-                  : 'text-[#c8c8c8]'
-              }`}
-              onClick={() => setMenuOpen(false)}
-            >
-              Planner
-            </div>
-          </Link>
-        </nav>
-      )}
+      <nav
+        className={`sm:hidden overflow-hidden transition-all duration-300 ease-in-out ${
+          menuOpen
+            ? 'max-h-64 opacity-100 visible'
+            : 'max-h-0 opacity-0 invisible'
+        } bg-[#151825] px-10 pb-4`}
+      >
+        <Link href="/">
+          <div
+            className={`cursor-pointer py-2 text-xl ${
+              pathname === '/'
+                ? 'text-white border-b-[1.5px] border-[#00C395]'
+                : 'text-[#c8c8c8]'
+            }`}
+            onClick={() => setMenuOpen(false)}
+          >
+            Home
+          </div>
+        </Link>
+        <Link href="/countries/france">
+          <div
+            className={`cursor-pointer py-2 text-xl ${
+              pathname.startsWith('/countries')
+                ? 'text-white border-b-[1.5px] border-[#00C395]'
+                : 'text-[#c8c8c8]'
+            }`}
+            onClick={() => setMenuOpen(false)}
+          >
+            Countries
+          </div>
+        </Link>
+        <Link href="/planner">
+          <div
+            className={`cursor-pointer py-2 text-xl ${
+              pathname === '/planner'
+                ? 'text-white border-b-[1.5px] border-[#00C395]'
+                : 'text-[#c8c8c8]'
+            }`}
+            onClick={() => setMenuOpen(false)}
+          >
+            Planner
+          </div>
+        </Link>
+      </nav>
       <style jsx>{`
         .shadow-custom {
           box-shadow:
             0 2px 6px -1px rgba(255, 255, 255, 0.1),
             0 1px 4px -1px rgba(255, 255, 255, 0.06);
+        }
+
+        .transition-max-height {
+          transition: max-height 0.5s ease-in-out;
         }
       `}</style>
     </header>
